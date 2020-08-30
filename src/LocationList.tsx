@@ -14,6 +14,7 @@ function LocationList() {
                 newState.push({
                     id: item,
                     name: items[item].name,
+                    image: items[item].image
                 });
             }
             setLocations(newState)

@@ -14,6 +14,8 @@ const config = {
 };
 
 firebase.initializeApp(config);
+
+export const storage = firebase.storage()
 export const db = firebase.database();
 export const databaseRef = firebase.database().ref();
 export const locationsRef = databaseRef.child("locations")

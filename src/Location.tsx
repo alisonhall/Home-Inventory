@@ -19,6 +19,7 @@ function Location(props: any) {
     return (
         <>
             <div className="location">
+                <img src={location.image} alt="" />
                 <form onSubmit={updateLocation}>
                     <TextField
                         style={{ width: "100%" }}
