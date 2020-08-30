@@ -21,6 +21,7 @@ function LocationList() {
     }, [])
     return (
         <>
+            <h3>Locations</h3>
             {locations.map((location: any, i: number) => (
                 <React.Fragment key={location.id}>
                     <Location location={location} />

@@ -17,6 +17,7 @@ function LocationForm() {
     };
     return (
         <>
+            <h3>Add Location</h3>
             <form onSubmit={createLocation}>
                 <TextField
                     style={{ width: "100%" }}
