@@ -44,9 +44,12 @@ function ViewItem(props: ViewItemProps) {
     }, [itemId]);
     useEffect(() => {
         item && item.containedWithin && itemsRef.child(item.containedWithin).on('value', (snapshot) => {
-            let item = snapshot.val();
-            setWithinItem({ ...item, id: item.containedWithin });
+            let containingItem = snapshot.val();
+            setWithinItem({ ...containingItem, id: item.containedWithin });
         });
+        if (!item || !item.containedWithin) {
+            setWithinItem(null);
+        }
     }, [item]);
 
     if (!item) {
