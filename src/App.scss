@@ -7,9 +7,20 @@
 
   pre {
     text-align: left;
+
+    code {
+      display: block;
+      max-width: 100%;
+      white-space: break-spaces;
+    }
   }
 
   form {
     padding: 8px;
+  }
+
+  .preview-image {
+    max-width: 100px;
+    max-height: 100px;
   }
 }
