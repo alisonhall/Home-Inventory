@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -14,22 +14,26 @@ import EditForm from './EditForm';
 import ViewItem from './ViewItem';
 import './App.scss';
 
-type DefaultContext = {
-  currentItemId: string | undefined,
-  parentItemId: string | undefined
-}
-export const AppContext = React.createContext<Partial<DefaultContext>>({})
-
 function App() {
-  const [currentItemId, setCurrentItemId] = useState<string | undefined>(undefined);
-  const [parentItemId, setParentItemId] = useState<string | undefined>(undefined);
-
-  const defaultProps = {
-    currentItemId,
-    setCurrentItemId,
-    parentItemId,
-    setParentItemId
-  };
+  const routes = (
+    <Switch>
+      <Route exact path="/">
+        <Home />
+      </Route>
+      <Route path="/add-location">
+        <EditForm />
+      </Route>
+      <Route path="/view/:itemId">
+        <ViewItem />
+      </Route>
+      <Route path="/edit/:itemId">
+        <EditForm />
+      </Route>
+      <Route path="/add/:parentId">
+        <EditForm />
+      </Route>
+    </Switch>
+  );
 
   return (
     <Router>
@@ -42,23 +46,7 @@ function App() {
           </Card>
           <Card>
             <CardContent>
-              <Switch>
-                <Route exact path="/">
-                  <Home {...defaultProps} />
-                </Route>
-                <Route path="/add-location">
-                  <EditForm {...defaultProps} />
-                </Route>
-                <Route path="/view/:itemId">
-                  <ViewItem {...defaultProps} />
-                </Route>
-                <Route path="/edit/:itemId">
-                  <EditForm {...defaultProps} />
-                </Route>
-                <Route path="/add/:parentId">
-                  <EditForm {...defaultProps} />
-                </Route>
-              </Switch>
+              {routes}
             </CardContent>
           </Card>
         </Container>

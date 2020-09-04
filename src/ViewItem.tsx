@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
@@ -13,13 +13,6 @@ type ParamsType = {
     itemId: string
 }
 
-type ViewItemProps = {
-    currentItemId: string | undefined,
-    setCurrentItemId: Dispatch<SetStateAction<string | undefined>>,
-    parentItemId: string | undefined,
-    setParentItemId: Dispatch<SetStateAction<string | undefined>>
-}
-
 interface Item {
     id?: string,
     name?: string,
@@ -29,7 +22,7 @@ interface Item {
     containedWithin?: string
 }
 
-function ViewItem(props: ViewItemProps) {
+function ViewItem() {
     let { itemId }: ParamsType = useParams();
     const [item, setItem] = useState<Item | null>(null);
     const [containingItemIds, setContainingItemIds] = useState<string[]>([]);
@@ -142,7 +135,7 @@ function ViewItem(props: ViewItemProps) {
             <Divider />
             {containingItemIds && containingItemIds.map((itemId: string, i: number) => (
                 <React.Fragment key={i}>
-                    <ItemPreview itemId={itemId} {...props} />
+                    <ItemPreview itemId={itemId} />
                     {i < containingItemIds.length - 1 && <Divider />}
                 </React.Fragment>
             ))}

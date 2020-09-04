@@ -1,15 +1,11 @@
-import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import { itemsRef } from './firebase';
 import './ItemPreview.scss';
 
 type ItemPreviewProps = {
-    itemId: string,
-    currentItemId: string | undefined,
-    setCurrentItemId: Dispatch<SetStateAction<string | undefined>>,
-    parentItemId: string | undefined,
-    setParentItemId: Dispatch<SetStateAction<string | undefined>>
+    itemId: string
 }
 
 type Item = {

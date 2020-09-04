@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
 
@@ -33,14 +33,7 @@ type ParamsType = {
     parentId?: string
 }
 
-type EditFormProps = {
-    currentItemId: string | undefined,
-    setCurrentItemId: Dispatch<SetStateAction<string | undefined>>,
-    parentItemId: string | undefined,
-    setParentItemId: Dispatch<SetStateAction<string | undefined>>
-}
-
-function EditForm(props: EditFormProps) {
+function EditForm() {
     let { itemId, parentId }: ParamsType = useParams();
 
     const [item, setItem] = useState<Item | undefined>(undefined);

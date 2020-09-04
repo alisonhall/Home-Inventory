@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
@@ -6,14 +6,7 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { locationsRef } from './firebase';
 import ItemsList from './ItemsList';
 
-type HomeProps = {
-    currentItemId: string | undefined,
-    setCurrentItemId: Dispatch<SetStateAction<string | undefined>>,
-    parentItemId: string | undefined,
-    setParentItemId: Dispatch<SetStateAction<string | undefined>>
-}
-
-function Home(props: HomeProps) {
+function Home() {
     const [locations, setLocations] = useState<string[]>([]);
     useEffect(() => {
         locationsRef.on('value', (snapshot) => {
@@ -30,10 +23,7 @@ function Home(props: HomeProps) {
                     <AddCircleOutlineIcon fontSize="small" />
                 </Link>
             </IconButton>
-            <ItemsList
-                itemsList={locations}
-                {...props}
-            />
+            <ItemsList itemsList={locations} />
         </>
     );
 }
