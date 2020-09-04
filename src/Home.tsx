@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
@@ -8,6 +11,8 @@ import ItemsList from './ItemsList';
 
 function Home() {
     const [locations, setLocations] = useState<string[]>([]);
+
+    // Get the list of location IDs
     useEffect(() => {
         locationsRef.on('value', (snapshot) => {
             let items = snapshot.val();
@@ -15,16 +20,19 @@ function Home() {
             setLocations(locationIds)
         });
     }, []);
+
     return (
-        <>
-            <h3>Locations</h3>
-            <IconButton>
-                <Link aria-label="add new location" to="/add-location">
-                    <AddCircleOutlineIcon fontSize="small" />
-                </Link>
-            </IconButton>
-            <ItemsList itemsList={locations} />
-        </>
+        <Card>
+            <CardContent>
+                <h3>Locations</h3>
+                <IconButton>
+                    <Link aria-label="add new location" to="/add-location">
+                        <AddCircleOutlineIcon fontSize="small" />
+                    </Link>
+                </IconButton>
+                <ItemsList itemsList={locations} withinCard />
+            </CardContent>
+        </Card>
     );
 }
 export default Home;

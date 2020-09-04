@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
 
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import TextField from '@material-ui/core/TextField';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
@@ -20,7 +22,7 @@ declare global {
 }
 
 type Item = {
-    id?: string,
+    id?: string | null | undefined,
     name?: string,
     images?: string[],
     files?: string[],
@@ -197,6 +199,7 @@ function EditForm() {
 
                 // Set which item the new item is within
                 updatedItem[`containedWithin`] = parentId;
+                updatedItem[`id`] = itemKey;
 
                 // Add the new item to the Firebase items reference
                 updates[`/items/${itemKey}`] = updatedItem;
@@ -218,6 +221,7 @@ function EditForm() {
                 itemKey = itemsRef.push().key;
 
                 // Add the new item to the items reference, add the new item key to the list of location ids
+                updatedItem[`id`] = itemKey;
                 updates[`/items/${itemKey}`] = updatedItem;
                 updates[`/locations`] = [...locationIds, itemKey];
 
@@ -246,58 +250,61 @@ function EditForm() {
     }
 
     return (
-        <>
-            <h3>{actionType}</h3>
-            <form onSubmit={saveItem}>
-                <TextField
-                    style={{ width: "100%" }}
-                    id="outlined-basic"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    label="Name"
-                    variant="outlined"
-                />
-                <input
-                    type="file"
-                    id="icon-button-file"
-                    onChange={(e) => handleImageUpload(e)}
-                    capture="environment"
-                    accept="image/*,.pdf"
-                    multiple
-                />
-                <label htmlFor="icon-button-file">
-                    <IconButton color="primary" aria-label="upload file" component="span">
-                        <PhotoCamera />
-                    </IconButton>
-                </label>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    startIcon={<SaveIcon />}
-                    onClick={saveItem}
-                >
-                    Save
+        <Card>
+            <CardContent>
+                <h3>{actionType}</h3>
+                <form onSubmit={saveItem}>
+                    <TextField
+                        style={{ width: "100%" }}
+                        id="outlined-basic"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        label="Name"
+                        variant="outlined"
+                    />
+                    <input
+                        type="file"
+                        id="icon-button-file"
+                        onChange={(e) => handleImageUpload(e)}
+                        capture="environment"
+                        accept="image/*,.pdf"
+                        multiple
+                    />
+                    <label htmlFor="icon-button-file">
+                        <IconButton color="primary" aria-label="upload file" component="span">
+                            <PhotoCamera />
+                        </IconButton>
+                    </label>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        startIcon={<SaveIcon />}
+                        onClick={saveItem}
+                    >
+                        Save
                 </Button>
-            </form>
-            {imageUrls && imageUrls.map((url, index) => (
-                <div className="image" key={index}>
-                    <img src={url} alt="" className="preview-image" />
-                    <IconButton aria-label="delete" onClick={e => deleteImage('image', index)}>
-                        <DeleteIcon fontSize="small" />
-                    </IconButton>
-                </div>
-            ))}
-            {fileUrls && fileUrls.map((url, index) => (
-                <div className="file" key={index}>
-                    <FileCopyIcon fontSize="large" />
-                    <IconButton aria-label="delete" onClick={e => deleteImage('file', index)}>
-                        <DeleteIcon fontSize="small" />
-                    </IconButton>
-                </div>
-            ))}
-            <Divider />
-        </>
+                </form>
+                <Divider />
+
+                {imageUrls && imageUrls.map((url, index) => (
+                    <div className="image" key={index}>
+                        <img src={url} alt="" className="preview-image" />
+                        <IconButton aria-label="delete" onClick={e => deleteImage('image', index)}>
+                            <DeleteIcon fontSize="small" />
+                        </IconButton>
+                    </div>
+                ))}
+                {fileUrls && fileUrls.map((url, index) => (
+                    <div className="file" key={index}>
+                        <FileCopyIcon fontSize="large" />
+                        <IconButton aria-label="delete" onClick={e => deleteImage('file', index)}>
+                            <DeleteIcon fontSize="small" />
+                        </IconButton>
+                    </div>
+                ))}
+            </CardContent>
+        </Card>
     );
 }
 export default EditForm;

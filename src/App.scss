@@ -6,12 +6,14 @@
   }
 
   pre {
+    width: 100%;
     text-align: left;
 
     code {
       display: block;
       max-width: 100%;
       white-space: break-spaces;
+      font-size: 14px;
     }
   }
 
