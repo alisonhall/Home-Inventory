@@ -26,8 +26,13 @@ interface Item {
     containedWithin?: string
 }
 
-function ViewItem() {
+type ViewItemProps = {
+    showJSON: boolean
+}
+
+function ViewItem(props: ViewItemProps) {
     let { itemId }: ParamsType = useParams();
+    const { showJSON } = props;
 
     const [item, setItem] = useState<Item | null>(null);
     const [containingItemIds, setContainingItemIds] = useState<string[]>([]);
@@ -167,6 +172,7 @@ function ViewItem() {
                     <IconButton aria-label="delete" onClick={deleteItem}>
                         <DeleteIcon fontSize="small" />
                     </IconButton>
+                    {showJSON && (<pre><code>{JSON.stringify(item, null, 2)}</code></pre>)}
                 </CardContent>
             </Card>
             {containingItemIds && (
@@ -176,7 +182,7 @@ function ViewItem() {
                         <Divider />
                         {containingItemIds && containingItemIds.map((itemId: string, i: number) => (
                             <React.Fragment key={i}>
-                                <ItemPreview itemId={itemId} />
+                                <ItemPreview itemId={itemId} {...props} />
                                 {i < containingItemIds.length - 1 && <Divider />}
                             </React.Fragment>
                         ))}

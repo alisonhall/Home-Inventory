@@ -35,8 +35,13 @@ type ParamsType = {
     parentId?: string
 }
 
-function EditForm() {
+type EditFormProps = {
+    showJSON: boolean
+}
+
+function EditForm(props: EditFormProps) {
     let { itemId, parentId }: ParamsType = useParams();
+    const { showJSON } = props;
 
     const [item, setItem] = useState<Item | undefined>(undefined);
     const [parentItem, setParentItem] = useState<Item | undefined>(undefined);
@@ -253,6 +258,7 @@ function EditForm() {
         <Card>
             <CardContent>
                 <h3>{actionType}</h3>
+                {showJSON && item && (<pre><code>{JSON.stringify(item, null, 2)}</code></pre>)}
                 <form onSubmit={saveItem}>
                     <TextField
                         style={{ width: "100%" }}

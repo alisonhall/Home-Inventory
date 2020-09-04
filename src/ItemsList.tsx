@@ -8,11 +8,12 @@ import ItemPreview from './ItemPreview';
 
 type ItemsListProps = {
     itemsList: string[],
-    withinCard: boolean
+    withinCard: boolean,
+    showJSON: boolean
 }
 
 function ItemsList(props: ItemsListProps) {
-    const { itemsList, withinCard = false } = props;
+    const { itemsList, withinCard = false, ...additionalProps } = props;
 
     // Don't render anything if there is no list of items, or there are no items within the list
     if (!itemsList || !itemsList.length) {
@@ -23,7 +24,7 @@ function ItemsList(props: ItemsListProps) {
     const content = itemsList && itemsList.map((itemId: string, i: number) => {
         return (
             <React.Fragment key={i}>
-                <ItemPreview itemId={itemId} />
+                <ItemPreview itemId={itemId} {...additionalProps} />
                 {i < itemsList.length - 1 && <Divider />}
             </React.Fragment>
         );

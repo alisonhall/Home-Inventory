@@ -9,7 +9,11 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { locationsRef } from './firebase';
 import ItemsList from './ItemsList';
 
-function Home() {
+type HomeProps = {
+    showJSON: boolean
+}
+
+function Home(props: HomeProps) {
     const [locations, setLocations] = useState<string[]>([]);
 
     // Get the list of location IDs
@@ -30,7 +34,7 @@ function Home() {
                         <AddCircleOutlineIcon fontSize="small" />
                     </Link>
                 </IconButton>
-                <ItemsList itemsList={locations} withinCard />
+                <ItemsList itemsList={locations} {...props} withinCard />
             </CardContent>
         </Card>
     );

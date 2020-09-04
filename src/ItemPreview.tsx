@@ -5,7 +5,8 @@ import { itemsRef } from './firebase';
 import './ItemPreview.scss';
 
 type ItemPreviewProps = {
-    itemId: string
+    itemId: string,
+    showJSON: boolean
 }
 
 type Item = {
@@ -18,7 +19,7 @@ type Item = {
 };
 
 function ItemPreview(props: ItemPreviewProps) {
-    const { itemId } = props;
+    const { itemId, showJSON } = props;
 
     const [item, setItem] = useState<Item | null>(null);
 
@@ -41,7 +42,7 @@ function ItemPreview(props: ItemPreviewProps) {
                 <img src={item.images && item.images[0]} alt="" className="preview-image" />
                 <p>{item.name}</p>
             </Link>
-            <pre><code>{JSON.stringify(item, null, 2)}</code></pre>
+            {showJSON && (<pre><code>{JSON.stringify(item, null, 2)}</code></pre>)}
         </div>
     );
 }
