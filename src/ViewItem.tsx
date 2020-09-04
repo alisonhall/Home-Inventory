@@ -100,17 +100,26 @@ function ViewItem(props: ViewItemProps) {
                             containing: parentContainingIds
                         };
 
-                        // Update the parent item with the updated data
                         const updates: any = {};
+                        // Update the parent item with the updated data
                         updates[`/items/${withinItem && withinItem.id}`] = updatedParentItem;
-                        databaseRef.update(updates);
-                    }
+                        // Remove the item
+                        updates[`/items/${itemId}`] = null;
 
-                    // Remove the item from the Firebase database
-                    itemsRef.child(itemId).remove();
+                        // Apply the updates to the Firebase database
+                        databaseRef.update(updates, function (error) {
+                            if (error) {
+                                alert('The updating of data failed!');
+                                console.error(error);
+                    }
+                        });
 
                     // Redirect the page to view the parent item
                     return history.push(`/view/${withinItem && withinItem.id}`);
+                } else {
+                        alert("Error: The item was not deleted");
+                        console.error("The item was not found within the parent's containing items list", { parentContainingIds, withinItem, itemId, itemIndexInParent })
+                    }
                 } else {
                     // Condition for a location
                     // Find the item ID within the locations array of IDs
@@ -121,17 +130,26 @@ function ViewItem(props: ViewItemProps) {
                         // Remove the item ID from the locations array
                         updatedLocations.splice(itemIndexInLocations, 1);
 
-                        // Update the locations array to use the updated list of location ids
                         const updates: any = {};
+                        // Update the locations array to use the updated list of location ids
                         updates[`/locations`] = [...updatedLocations];
-                        databaseRef.update(updates);
-                    }
+                        // Remove the item
+                        updates[`/items/${itemId}`] = null;
 
-                    // Remove the item from the Firebase database
-                    itemsRef.child(itemId).remove();
+                        // Apply the updates to the Firebase database
+                        databaseRef.update(updates, function (error) {
+                            if (error) {
+                                alert('The updating of data failed!');
+                                console.error(error);
+                    }
+                        });
 
                     // Redirect the page to the list of locations
                     return history.push(`/`);
+                    } else {
+                        alert("Error: The item was not deleted");
+                        console.error("The item was not found within the list of location ids", { parentContainingIds, withinItem, locationIds, itemId, itemIndexInLocations })
+                    }
                 }
             }
         } catch (error) {

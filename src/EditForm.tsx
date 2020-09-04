@@ -132,10 +132,12 @@ function EditForm(props: EditFormProps) {
                                                     });
                                             });
                                         } catch (error) {
+                                            alert('Error when saving image!');
                                             reject(error);
                                         }
                                     })
                                     .catch(function (error) {
+                                        alert('Error when saving image!');
                                         reject(error.message);
                                     });
                                 break;
@@ -154,6 +156,7 @@ function EditForm(props: EditFormProps) {
                                             });
                                     });
                                 } catch (error) {
+                                    alert('Error when saving image!');
                                     reject(error);
                                 }
                                 break;
@@ -196,7 +199,12 @@ function EditForm(props: EditFormProps) {
             if (itemId) {
                 // Editing an item
                 updates[`/items/${itemKey}`] = updatedItem;
-                databaseRef.update(updates);
+                databaseRef.update(updates, function (error) {
+                    if (error) {
+                        alert('The updating of data failed!');
+                        console.error(error);
+                    }
+                });
             } else if (parentId) {
                 // Creating a new item
                 // Get new item key
@@ -219,7 +227,12 @@ function EditForm(props: EditFormProps) {
                 }
                 
                 // Apply the updates to the Firebase database
-                databaseRef.update(updates);
+                databaseRef.update(updates, function (error) {
+                    if (error) {
+                        alert('The updating of data failed!');
+                        console.error(error);
+                    }
+                });
             } else {
                 // Creating a new location
                 // Get new item key
@@ -231,7 +244,12 @@ function EditForm(props: EditFormProps) {
                 updates[`/locations`] = [...locationIds, itemKey];
 
                 // Apply the updates to the Firebase database
-                databaseRef.update(updates);
+                databaseRef.update(updates, function (error) {
+                    if (error) {
+                        alert('The updating of data failed!');
+                        console.error(error);
+                    }
+                });
             }
             // Redirect the page to view the newly created item
             return history.push(`/view/${itemKey}`)
