@@ -62,11 +62,12 @@ function EditForm(props: EditFormProps) {
             setParentItem(item);
         });
     }, [parentId]);
-
-    locationsRef.on('value', (snapshot) => {
-        let item = snapshot.val();
-        setLocationIds(Object.values(item));
-    });
+    useEffect(() => {
+        locationsRef.on('value', (snapshot) => {
+            let item = snapshot.val();
+            setLocationIds(Object.values(item));
+        });
+    }, []);
 
     let history = useHistory();
 
