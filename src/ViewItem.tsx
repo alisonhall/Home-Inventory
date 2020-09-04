@@ -2,10 +2,11 @@ import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import { itemsRef } from './firebase';
+import { databaseRef, itemsRef, locationsRef } from './firebase';
 import ItemPreview from './ItemPreview';
 
 type ParamsType = {
@@ -67,10 +68,16 @@ function ViewItem(props: ViewItemProps) {
             <img src={item.images && item.images[0]} alt="" className="preview-image" />
             <img src={item.images && item.images[1]} alt="" className="preview-image" />
             <img src={item.images && item.images[2]} alt="" className="preview-image" />
+            <IconButton>
+                <Link aria-label="new" to={`/add/${item.id}`}>
+                    <AddCircleOutlineIcon fontSize="small" />
+                </Link>
+            </IconButton>
+            <IconButton>
             <Link aria-label="edit" to={`/edit/${item.id}`}>
                 <EditIcon fontSize="small" />
             </Link>
-            <IconButton aria-label="delete" onClick={e => itemsRef.child(itemId).remove()}>
+            </IconButton>
                 <DeleteIcon fontSize="small" />
             </IconButton>
             <Divider />
