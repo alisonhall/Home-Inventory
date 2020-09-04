@@ -32,7 +32,6 @@ function ItemPreview(props: ItemPreviewProps) {
 
     // Don't render anything if the item is not found
     if (!item) {
-        console.error('Item not found', itemId);
         return null;
     }
 

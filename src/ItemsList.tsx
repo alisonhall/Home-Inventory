@@ -16,7 +16,6 @@ function ItemsList(props: ItemsListProps) {
 
     // Don't render anything if there is no list of items, or there are no items within the list
     if (!itemsList || !itemsList.length) {
-        console.error('No list of items, or no items within list', itemsList);
         return null;
     }
 
