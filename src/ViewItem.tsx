@@ -70,7 +70,6 @@ function ViewItem(props: ViewItemProps) {
         try {
             e.preventDefault();
 
-            console.log({ item, withinItem, containingItemIds });
             if (containingItemIds) {
                 alert('Unable to delete because this item contains other items within it. Delete or move those items within before trying again.')
             } else {
@@ -78,8 +77,6 @@ function ViewItem(props: ViewItemProps) {
 
                 if (parentContainingIds) {
                     const itemIndexInParent = parentContainingIds && parentContainingIds.indexOf(itemId);
-
-                    console.log({ itemIndexInParent, parentContainingIds });
 
                     if (typeof itemIndexInParent === 'number' && itemIndexInParent >= 0) {
                         parentContainingIds.splice(itemIndexInParent, 1);
@@ -89,8 +86,6 @@ function ViewItem(props: ViewItemProps) {
                             containing: parentContainingIds
                         };
 
-                        console.log({updatedParentItem});
-            
                         const updates: any = {};
                         updates[`/items/${withinItem && withinItem.id}`] = updatedParentItem;
                         databaseRef.update(updates);

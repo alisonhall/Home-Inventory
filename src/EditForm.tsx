@@ -146,7 +146,6 @@ function EditForm(props: EditFormProps) {
             });
 
             promise.then(result => {
-                console.log({newImageUrls, newFileUrls});
                 setImageURLs(newImageUrls);
                 setFileURLs(newFileUrls);
             }, function (error) {
