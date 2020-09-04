@@ -59,6 +59,7 @@ function EditForm(props: EditFormProps) {
             setImageURLs(item.images);
             setFileURLs(item.files);
         });
+        return () => { itemId && itemsRef.child(itemId).off(); }
     }, [itemId]);
     // Get the details of the parent item for when creating a new item within the parent item
     useEffect(() => {
@@ -66,6 +67,7 @@ function EditForm(props: EditFormProps) {
             let item = snapshot.val();
             setParentItem(item);
         });
+        return () => { parentId && itemsRef.child(parentId).off(); }
     }, [parentId]);
     // Get the list of location IDs for when creating a new location item
     useEffect(() => {
@@ -73,6 +75,7 @@ function EditForm(props: EditFormProps) {
             let item = snapshot.val();
             setLocationIds(Object.values(item));
         });
+        return () => { locationsRef.off(); }
     }, []);
 
     let history = useHistory();

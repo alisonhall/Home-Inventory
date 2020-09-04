@@ -49,6 +49,7 @@ function ViewItem(props: ViewItemProps) {
             const childIds: string[] | undefined = item && item.containing && Object.values(item.containing);
             setContainingItemIds(childIds);
         });
+        return () => { itemId && itemsRef.child(itemId).off(); }
     }, [itemId]);
     // Get the details of the parent item
     useEffect(() => {
@@ -59,6 +60,7 @@ function ViewItem(props: ViewItemProps) {
         if (!item || !item.containedWithin) {
             setWithinItem(null);
         }
+        return () => { item && item.containedWithin && itemsRef.child(item.containedWithin).off(); }
     }, [item]);
     // Get the list of location IDs
     useEffect(() => {
@@ -66,6 +68,7 @@ function ViewItem(props: ViewItemProps) {
             let item = snapshot.val();
             setLocationIds(Object.values(item));
         });
+        return () => { locationsRef.off(); }
     }, []);
 
     let history = useHistory();
@@ -111,12 +114,12 @@ function ViewItem(props: ViewItemProps) {
                             if (error) {
                                 alert('The updating of data failed!');
                                 console.error(error);
-                    }
+                            }
                         });
-
-                    // Redirect the page to view the parent item
-                    return history.push(`/view/${withinItem && withinItem.id}`);
-                } else {
+                        
+                        // Redirect the page to view the parent item
+                        return history.push(`/view/${withinItem && withinItem.id}`);
+                    } else {
                         alert("Error: The item was not deleted");
                         console.error("The item was not found within the parent's containing items list", { parentContainingIds, withinItem, itemId, itemIndexInParent })
                     }
@@ -141,11 +144,11 @@ function ViewItem(props: ViewItemProps) {
                             if (error) {
                                 alert('The updating of data failed!');
                                 console.error(error);
-                    }
+                            }
                         });
 
-                    // Redirect the page to the list of locations
-                    return history.push(`/`);
+                        // Redirect the page to the list of locations
+                        return history.push(`/`);
                     } else {
                         alert("Error: The item was not deleted");
                         console.error("The item was not found within the list of location ids", { parentContainingIds, withinItem, locationIds, itemId, itemIndexInLocations })

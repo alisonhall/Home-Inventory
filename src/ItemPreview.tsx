@@ -29,6 +29,7 @@ function ItemPreview(props: ItemPreviewProps) {
             let item = snapshot.val();
             setItem(item);
         });
+        return () => { itemId && itemsRef.child(itemId).off(); }
     }, [itemId]);
 
     // Don't render anything if the item is not found

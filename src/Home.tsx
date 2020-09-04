@@ -23,6 +23,7 @@ function Home(props: HomeProps) {
             const locationIds: string[] = items && Object.values(items);
             setLocations(locationIds)
         });
+        return () => { locationsRef.off(); }
     }, []);
 
     return (
