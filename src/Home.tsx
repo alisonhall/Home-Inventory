@@ -1,5 +1,7 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { Link } from 'react-router-dom';
+import IconButton from '@material-ui/core/IconButton';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
 import { locationsRef } from './firebase';
 import ItemsList from './ItemsList';
@@ -23,7 +25,11 @@ function Home(props: HomeProps) {
     return (
         <>
             <h3>Locations</h3>
-            <Link to="/add-location">Add New Location</Link>
+            <IconButton>
+                <Link aria-label="add new location" to="/add-location">
+                    <AddCircleOutlineIcon fontSize="small" />
+                </Link>
+            </IconButton>
             <ItemsList
                 itemsList={locations}
                 {...props}
