@@ -9,6 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 import { itemsRef, databaseRef, locationsRef, storage } from './firebase';
 
@@ -41,12 +42,15 @@ type EditFormProps = {
 
 function EditForm(props: EditFormProps) {
     let { itemId, parentId }: ParamsType = useParams();
+
     const [item, setItem] = useState<Item | undefined>(undefined);
     const [parentItem, setParentItem] = useState<Item | undefined>(undefined);
     const [locationIds, setLocationIds] = useState<string[]>([]);
     const [name, setName] = useState("");
     const [imageUrls, setImageURLs] = useState<string[]>([]);
     const [fileUrls, setFileURLs] = useState<string[]>([]);
+
+    // Get the specified item from the URL param for when editing that item
     useEffect(() => {
         itemId && itemsRef.child(itemId).on('value', (snapshot) => {
             let item = snapshot.val();
@@ -56,12 +60,14 @@ function EditForm(props: EditFormProps) {
             setFileURLs(item.files);
         });
     }, [itemId]);
+    // Get the details of the parent item for when creating a new item within the parent item
     useEffect(() => {
         parentId && itemsRef.child(parentId).on('value', (snapshot) => {
             let item = snapshot.val();
             setParentItem(item);
         });
     }, [parentId]);
+    // Get the list of location IDs for when creating a new location item
     useEffect(() => {
         locationsRef.on('value', (snapshot) => {
             let item = snapshot.val();
@@ -71,19 +77,29 @@ function EditForm(props: EditFormProps) {
 
     let history = useHistory();
 
+    // Set the action type the form is handling
+    let actionType = 'Create New Location';
+    if (itemId) {
+        actionType = 'Edit Item';
+    } else if (parentId) {
+        actionType = 'Create New Item';
+    }
+
     function handleImageUpload(e: React.FormEvent<EventTarget>) {
         try {
             e.preventDefault();
 
             const target = e.target as HTMLInputElement;
+            // Get the files selected in the form
             const fileItems = target && target.files && target.files as FileList;
-
             
             const newImageUrls:string[] = [];
             const newFileUrls:string[] = [];
 
-            var promise = new Promise((resolve, reject) => {
+            // Upload all selected files
+            const uploadImagePromise = new Promise((resolve, reject) => {
                 fileItems && Array.from(fileItems).forEach(fileItem => {
+                    // Upload a single file
                     if (fileItem && fileItem.name) {
                         switch (fileItem.type) {
                             case 'image/gif':
@@ -93,6 +109,7 @@ function EditForm(props: EditFormProps) {
                             case 'image/tiff':
                             case 'image/webp':
                             case 'image/bmp':
+                                // Set the imageCompression options
                                 const options = {
                                     maxSizeMB: 0.5,
                                     maxWidthOrHeight: 1280,
@@ -102,7 +119,9 @@ function EditForm(props: EditFormProps) {
                                 imageCompression(fileItem, options)
                                     .then(function (compressedFile) {
                                         try {
+                                            // Upload the compressed image to the Firebase /images folder
                                             const uploadTask = storage.ref(`/images/${fileItem.name}`).put(compressedFile);
+                                            // Get the newly uploaded image's url, and add it to the list of image URLs
                                             uploadTask.on("state_changed", console.log, console.error, () => {
                                                 storage
                                                     .ref("images")
@@ -122,7 +141,9 @@ function EditForm(props: EditFormProps) {
                                 break;
                             default:
                                 try {
+                                    // Upload the file to the Firebase /files folder
                                     const uploadTask = storage.ref(`/files/${fileItem.name}`).put(fileItem);
+                                    // Get the newly uploaded files's url, and add it to the list of file URLs
                                     uploadTask.on("state_changed", console.log, console.error, () => {
                                         storage
                                             .ref("files")
@@ -145,7 +166,8 @@ function EditForm(props: EditFormProps) {
                 resolve(true);
             });
 
-            promise.then(result => {
+            // Update the changed image and file URLs within the component state once all of the files have finished uploading
+            uploadImagePromise.then(result => {
                 setImageURLs(newImageUrls);
                 setFileURLs(newFileUrls);
             }, function (error) {
@@ -161,6 +183,7 @@ function EditForm(props: EditFormProps) {
             e.preventDefault();
             let itemKey: string | undefined | null = itemId;
 
+            // Data of the item to be created or updated
             const updatedItem = {
                 ...item,
                 name: name,
@@ -171,14 +194,21 @@ function EditForm(props: EditFormProps) {
             const updates: any = {};
 
             if (itemId) {
+                // Editing an item
                 updates[`/items/${itemKey}`] = updatedItem;
                 databaseRef.update(updates);
             } else if (parentId) {
+                // Creating a new item
+                // Get new item key
                 itemKey = itemsRef.push().key;
+
+                // Set which item the new item is within
                 updatedItem[`containedWithin`] = parentId;
 
+                // Add the new item to the Firebase items reference
                 updates[`/items/${itemKey}`] = updatedItem;
 
+                // Add the new item key to the list of the parent item's containing items
                 if (parentItem && !parentItem.containing) {
                     updates[`/items/${parentId}`] = {...parentItem, containing: [ itemKey ]}
                 } else if (parentItem && parentItem.containing) {
@@ -187,14 +217,21 @@ function EditForm(props: EditFormProps) {
                     updates[`/items/${parentId}/containing`] = containingItemIds;
                 }
                 
+                // Apply the updates to the Firebase database
                 databaseRef.update(updates);
             } else {
+                // Creating a new location
+                // Get new item key
                 itemKey = itemsRef.push().key;
 
+                // Add the new item to the items reference, add the new item key to the list of location ids
                 updates[`/items/${itemKey}`] = updatedItem;
                 updates[`/locations`] = [...locationIds, itemKey];
+
+                // Apply the updates to the Firebase database
                 databaseRef.update(updates);
             }
+            // Redirect the page to view the newly created item
             return history.push(`/view/${itemKey}`)
         } catch (error) {
             console.error('ERROR in EditForm.jsx, saveItem function', error);
@@ -203,10 +240,12 @@ function EditForm(props: EditFormProps) {
 
     const deleteImage = (type: string, index: number) => {
         if (type === 'image') {
+            // Remove the specified image from the image URLs list state
             const updatedUrls = [...imageUrls];
             updatedUrls.splice(index, 1);
             setImageURLs(updatedUrls);
         } else {
+            // Remove the specified file from the file URLs list state
             const updatedUrls = [...fileUrls];
             updatedUrls.splice(index, 1);
             setFileURLs(updatedUrls);
@@ -215,14 +254,14 @@ function EditForm(props: EditFormProps) {
 
     return (
         <>
-            <h3>Add Location</h3>
+            <h3>{actionType}</h3>
             <form onSubmit={saveItem}>
                 <TextField
                     style={{ width: "100%" }}
                     id="outlined-basic"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    label="Add Location"
+                    label="Name"
                     variant="outlined"
                 />
                 <input
@@ -234,7 +273,7 @@ function EditForm(props: EditFormProps) {
                     multiple
                 />
                 <label htmlFor="icon-button-file">
-                    <IconButton color="primary" aria-label="upload picture" component="span">
+                    <IconButton color="primary" aria-label="upload file" component="span">
                         <PhotoCamera />
                     </IconButton>
                 </label>
@@ -248,30 +287,22 @@ function EditForm(props: EditFormProps) {
                     Save
                 </Button>
             </form>
-            {imageUrls && imageUrls[0] && (
-                <>
-                    <img src={imageUrls[0]} alt="" className="preview-image" />
-                    <IconButton aria-label="delete" onClick={e => deleteImage('image', 0)}>
+            {imageUrls && imageUrls.map((url, index) => (
+                <div className="image" key={index}>
+                    <img src={url} alt="" className="preview-image" />
+                    <IconButton aria-label="delete" onClick={e => deleteImage('image', index)}>
                         <DeleteIcon fontSize="small" />
                     </IconButton>
-                </>
-            )}
-            {imageUrls && imageUrls[1] && (
-                <>
-                    <img src={imageUrls[1]} alt="" className="preview-image" />
-                    <IconButton aria-label="delete" onClick={e => deleteImage('image', 1)}>
+                </div>
+            ))}
+            {fileUrls && fileUrls.map((url, index) => (
+                <div className="file" key={index}>
+                    <FileCopyIcon fontSize="large" />
+                    <IconButton aria-label="delete" onClick={e => deleteImage('file', index)}>
                         <DeleteIcon fontSize="small" />
                     </IconButton>
-                </>
-            )}
-            {imageUrls && imageUrls[2] && (
-                <>
-                    <img src={imageUrls[2]} alt="" className="preview-image" />
-                    <IconButton aria-label="delete" onClick={e => deleteImage('image', 2)}>
-                        <DeleteIcon fontSize="small" />
-                    </IconButton>
-                </>
-            )}
+                </div>
+            ))}
             <Divider />
         </>
     );
