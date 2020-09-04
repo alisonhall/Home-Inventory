@@ -176,6 +176,7 @@ function EditForm(props: EditFormProps) {
                 databaseRef.update(updates);
             } else if (parentId) {
                 itemKey = itemsRef.push().key;
+                updatedItem[`containedWithin`] = parentId;
 
                 updates[`/items/${itemKey}`] = updatedItem;
 
