@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import IconButton from '@material-ui/core/IconButton';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import { Card, CardContent, Fab } from '@material-ui/core';
+import { Add as AddIcon } from '@material-ui/icons';
 
 import { locationsRef } from './firebase';
 import ItemsList from './ItemsList';
+import Loader from './Loader';
 
 type HomeProps = {
     showJSON: boolean
 }
 
 function Home(props: HomeProps) {
+    const [isLoading, setIsLoading] = useState(true);
     const [locations, setLocations] = useState<string[]>([]);
 
     // Get the list of location IDs
@@ -21,7 +21,8 @@ function Home(props: HomeProps) {
         locationsRef.on('value', (snapshot) => {
             let items = snapshot.val();
             const locationIds: string[] = items && Object.values(items);
-            setLocations(locationIds)
+            setLocations(locationIds);
+            setIsLoading(false);
         });
         return () => { locationsRef.off(); }
     }, []);
@@ -29,13 +30,19 @@ function Home(props: HomeProps) {
     return (
         <Card>
             <CardContent>
-                <h3>Locations</h3>
-                <IconButton>
-                    <Link aria-label="add new location" to="/add-location">
-                        <AddCircleOutlineIcon fontSize="small" />
-                    </Link>
-                </IconButton>
-                <ItemsList itemsList={locations} {...props} withinCard />
+                {isLoading
+                    ? <Loader />
+                    : (
+                        <>
+                            <h3>Locations</h3>
+                            <Fab>
+                                <Link aria-label="add new location" to="/add-location">
+                                    <AddIcon fontSize="large" />
+                                </Link>
+                            </Fab>
+                            <ItemsList itemsList={locations} {...props} withinCard />
+                        </>
+                    )}
             </CardContent>
         </Card>
     );

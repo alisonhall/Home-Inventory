@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -6,8 +6,7 @@ import {
   Link
 } from 'react-router-dom';
 
-import Container from '@material-ui/core/Container';
-import ToggleSwitch from '@material-ui/core/Switch';
+import { AppBar, Toolbar, Container, Typography, Switch as ToggleSwitch, Button } from '@material-ui/core';
 
 import { signIn, signOut, checkLoggedInStatus } from './firebase';
 import Home from './Home';
@@ -50,20 +49,26 @@ function App() {
     <Router>
       <div className="app">
         <Container className="container" maxWidth="sm">
-          <Link to="/">Home Inventory</Link>
-          <ToggleSwitch
-            checked={showJSON}
-            onChange={e => setShowJSON(!showJSON)}
-            name="toggleJSON"
-            color="primary"
-            inputProps={{ 'aria-label': 'Toggle JSON' }}
-          />
-                {isLoggedIn
-                  ? <Button color="inherit" onClick={signOut}>Logout</Button>
-                  : <Button color="inherit" onClick={signIn}>Login</Button>}
-            {isLoggedIn
-              ? routes
-              : <p>You must login</p>}
+          <AppBar position="static">
+            <Toolbar>
+              <Typography variant="h6">
+                <Link to="/">Home Inventory</Link>
+              </Typography>
+              <ToggleSwitch
+                checked={showJSON}
+                onChange={e => setShowJSON(!showJSON)}
+                name="toggleJSON"
+                color="primary"
+                inputProps={{ 'aria-label': 'Toggle JSON' }}
+              />
+              {isLoggedIn
+                ? <Button color="inherit" onClick={signOut}>Logout</Button>
+                : <Button color="inherit" onClick={signIn}>Login</Button>}
+            </Toolbar>
+          </AppBar>
+          {isLoggedIn
+            ? routes
+            : <p>You must login</p>}
         </Container>
       </div>
     </Router>

@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useHistory } from 'react-router-dom';
 
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+import { Card, CardContent, Divider, Fab } from '@material-ui/core';
+import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, FileCopy as FileCopyIcon } from '@material-ui/icons';
 
 import { databaseRef, itemsRef, locationsRef } from './firebase';
 import ItemPreview from './ItemPreview';
+import Loader from './Loader';
 
 type ParamsType = {
     itemId: string
@@ -34,6 +29,7 @@ function ViewItem(props: ViewItemProps) {
     let { itemId }: ParamsType = useParams();
     const { showJSON } = props;
 
+    const [isLoading, setIsLoading] = useState(true);
     const [item, setItem] = useState<Item | null>(null);
     const [containingItemIds, setContainingItemIds] = useState<string[]>([]);
     const [withinItem, setWithinItem] = useState<Item | null>(null);
@@ -48,6 +44,7 @@ function ViewItem(props: ViewItemProps) {
             // Get and save the IDs of the items within the retrieved item
             const childIds: string[] | undefined = item && item.containing && Object.values(item.containing);
             setContainingItemIds(childIds);
+            setIsLoading(false);
         });
         return () => { itemId && itemsRef.child(itemId).off(); }
     }, [itemId]);
@@ -86,6 +83,8 @@ function ViewItem(props: ViewItemProps) {
                 // Prevent deleting an item that has other items within it
                 alert('Unable to delete because this item contains other items within it. Delete or move those items within before trying again.')
             } else {
+                setIsLoading(true);
+
                 let parentContainingIds = withinItem && withinItem.containing && Object.values(withinItem.containing);
 
                 if (parentContainingIds) {
@@ -154,6 +153,7 @@ function ViewItem(props: ViewItemProps) {
                         console.error("The item was not found within the list of location ids", { parentContainingIds, withinItem, locationIds, itemId, itemIndexInLocations })
                     }
                 }
+                setIsLoading(false);
             }
         } catch (error) {
             console.error('ERROR in ViewItem.jsx, deleteItem function', error);
@@ -164,36 +164,47 @@ function ViewItem(props: ViewItemProps) {
         <>
             <Card>
                 <CardContent>
-                    {withinItem && (
-                        <Link aria-label="view parent item" to={`/view/${withinItem.id}`}>
-                            Within {withinItem.name}
-                        </Link>
-                    )}
-                    <h3>{item.name}</h3>
-                    {item.images && item.images.map((image, index) => (
-                        <Link to={image} key={index}>
-                            <img src={image} alt="" className="preview-image" />
-                        </Link>
-                    ))}
-                    {item.files && item.files.map((file, index) => (
-                        <Link to={file} key={index}>
-                            <FileCopyIcon />
-                        </Link>
-                    ))}
-                    <IconButton>
-                        <Link aria-label="new" to={`/add/${item.id}`}>
-                            <AddCircleOutlineIcon fontSize="small" />
-                        </Link>
-                    </IconButton>
-                    <IconButton>
-                        <Link aria-label="edit" to={`/edit/${item.id}`}>
-                            <EditIcon fontSize="small" />
-                        </Link>
-                    </IconButton>
-                    <IconButton aria-label="delete" onClick={deleteItem}>
-                        <DeleteIcon fontSize="small" />
-                    </IconButton>
-                    {showJSON && (<pre><code>{JSON.stringify(item, null, 2)}</code></pre>)}
+                    {isLoading
+                        ? <Loader />
+                        : (
+                            <>
+                                {withinItem && (
+                                    <Link aria-label="view parent item" to={`/view/${withinItem.id}`}>
+                                        Within {withinItem.name}
+                                    </Link>
+                                )}
+                                {!withinItem && (
+                                    <Link aria-label="view locations" to="/" >
+                                        Go to All Locations
+                                    </Link>
+                                )}
+                                <h3>{item.name}</h3>
+                                {item.images && item.images.map((image, index) => (
+                                    <Link to={image} key={index}>
+                                        <img src={image} alt="" className="preview-image" />
+                                    </Link>
+                                ))}
+                                {item.files && item.files.map((file, index) => (
+                                    <Link to={file} key={index}>
+                                        <FileCopyIcon />
+                                    </Link>
+                                ))}
+                                <Fab title="Add item within">
+                                    <Link aria-label="add new item within" to={`/add/${item.id}`}>
+                                        <AddIcon fontSize="large" />
+                                    </Link>
+                                </Fab>
+                                <Fab title="Edit item">
+                                    <Link aria-label="edit item" to={`/edit/${item.id}`}>
+                                        <EditIcon fontSize="large" />
+                                    </Link>
+                                </Fab>
+                                <Fab color="secondary" title="Delete item" aria-label="delete item" onClick={deleteItem}>
+                                    <DeleteIcon fontSize="large" />
+                                </Fab>
+                                {showJSON && (<pre><code>{JSON.stringify(item, null, 2)}</code></pre>)}
+                            </>
+                        )}
                 </CardContent>
             </Card>
             {containingItemIds && (
