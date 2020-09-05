@@ -9,6 +9,7 @@ import {
 import Container from '@material-ui/core/Container';
 import ToggleSwitch from '@material-ui/core/Switch';
 
+import { signIn, signOut, checkLoggedInStatus } from './firebase';
 import Home from './Home';
 import EditForm from './EditForm';
 import ViewItem from './ViewItem';
@@ -16,6 +17,12 @@ import './App.scss';
 
 function App() {
   const [showJSON, setShowJSON] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Get the logged in status from Firebase auth
+  useEffect(() => {
+    checkLoggedInStatus(setIsLoggedIn);
+  }, []);
 
   const defaultProps = { showJSON };
 
@@ -51,7 +58,12 @@ function App() {
             color="primary"
             inputProps={{ 'aria-label': 'Toggle JSON' }}
           />
-          {routes}
+                {isLoggedIn
+                  ? <Button color="inherit" onClick={signOut}>Logout</Button>
+                  : <Button color="inherit" onClick={signIn}>Login</Button>}
+            {isLoggedIn
+              ? routes
+              : <p>You must login</p>}
         </Container>
       </div>
     </Router>

@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from 'react';
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
@@ -24,6 +25,32 @@ const config = {
 };
 
 firebase.initializeApp(config);
+
+export const provider = new firebase.auth.GithubAuthProvider();
+export const signIn = () => firebase.auth().signInWithRedirect(provider);
+firebase.auth().getRedirectResult().then(function (result) {
+    console.info('User successfully signed in');
+}).catch(function (error) {
+    console.error('Login error', error);
+});
+
+export const signOut = () => (
+    firebase.auth().signOut().then(function () {
+        console.info('User successfully signed out');
+    }).catch(function (error) {
+        console.error('Logout error', error);
+    })
+);
+
+export const checkLoggedInStatus = (setIsLoggedIn: Dispatch<SetStateAction<boolean>>) => {
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            setIsLoggedIn(true);
+        } else {
+            setIsLoggedIn(false);
+        }
+    });
+};
 
 export const storage = firebase.storage()
 export const db = firebase.database();
