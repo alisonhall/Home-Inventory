@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { Link, useParams, useHistory } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
 
 import { Card, CardContent, TextField, Divider, Button, IconButton } from '@material-ui/core';
@@ -316,6 +316,9 @@ function EditForm(props: EditFormProps) {
                                 >
                                     Save
                                 </Button>
+                                <Link to={itemId ? `/view/${itemId}` : (parentId ? `/view/${parentId}` : `/`)}>
+                                    Cancel
+                                </Link>
                             </form>
                             <Divider />
 
