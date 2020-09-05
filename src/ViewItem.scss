@@ -1,0 +1,14 @@
+.view-item {
+    .parent-item-link {
+        background-color: white;
+
+        &::hover,
+        &::focus {
+            background-color: #fbfbfb;
+        }
+
+        a {
+            color: inherit;
+        }
+    }
+}

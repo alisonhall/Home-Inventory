@@ -35,7 +35,7 @@ function Home(props: HomeProps) {
                     : (
                         <>
                             <h3>Locations</h3>
-                            <Fab>
+                            <Fab color="secondary" title="Add new location">
                                 <Link aria-label="add new location" to="/add-location">
                                     <AddIcon fontSize="large" />
                                 </Link>

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useHistory } from 'react-router-dom';
 
-import { Card, CardContent, Divider, Fab } from '@material-ui/core';
-import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, FileCopy as FileCopyIcon } from '@material-ui/icons';
+import { Card, CardContent, Divider, Fab, IconButton, Button } from '@material-ui/core';
+import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, FileCopy as FileCopyIcon, ArrowBackIos as ArrowBackIosIcon } from '@material-ui/icons';
 
 import { databaseRef, itemsRef, locationsRef } from './firebase';
 import ItemPreview from './ItemPreview';
 import Loader from './Loader';
+import './ViewItem.scss';
 
 type ParamsType = {
     itemId: string
@@ -161,22 +162,34 @@ function ViewItem(props: ViewItemProps) {
     };
 
     return (
-        <>
-            <Card>
+        <div className="view-item">
+            <Card className="view-item-content">
                 <CardContent>
                     {isLoading
                         ? <Loader />
                         : (
                             <>
                                 {withinItem && (
-                                    <Link aria-label="view parent item" to={`/view/${withinItem.id}`}>
-                                        Within {withinItem.name}
-                                    </Link>
+                                    <Button
+                                        className="parent-item-link"
+                                        variant="contained"
+                                        startIcon={<ArrowBackIosIcon />}
+                                    >
+                                        <Link aria-label="view parent item" to={`/view/${withinItem.id}`}>
+                                            Within {withinItem.name}
+                                        </Link>
+                                    </Button>
                                 )}
                                 {!withinItem && (
-                                    <Link aria-label="view locations" to="/" >
-                                        Go to All Locations
-                                    </Link>
+                                    <Button
+                                        className="parent-item-link"
+                                        variant="contained"
+                                        startIcon={<ArrowBackIosIcon />}
+                                    >
+                                        <Link aria-label="view locations" to="/" >
+                                            Go to All Locations
+                                        </Link>
+                                    </Button>
                                 )}
                                 <h3>{item.name}</h3>
                                 {item.images && item.images.map((image, index) => (
@@ -189,26 +202,26 @@ function ViewItem(props: ViewItemProps) {
                                         <FileCopyIcon />
                                     </Link>
                                 ))}
-                                <Fab title="Add item within">
-                                    <Link aria-label="add new item within" to={`/add/${item.id}`}>
+                                <Fab title="Add item within" color="secondary">
+                                    <Link className="link-icon" aria-label="add new item within" to={`/add/${item.id}`}>
                                         <AddIcon fontSize="large" />
                                     </Link>
                                 </Fab>
-                                <Fab title="Edit item">
-                                    <Link aria-label="edit item" to={`/edit/${item.id}`}>
+                                <IconButton title="Edit item" color="primary">
+                                    <Link className="link-icon" aria-label="edit item" to={`/edit/${item.id}`}>
                                         <EditIcon fontSize="large" />
                                     </Link>
-                                </Fab>
-                                <Fab color="secondary" title="Delete item" aria-label="delete item" onClick={deleteItem}>
+                                </IconButton>
+                                <IconButton title="Delete item" aria-label="delete item" color="primary" onClick={deleteItem}>
                                     <DeleteIcon fontSize="large" />
-                                </Fab>
+                                </IconButton>
                                 {showJSON && (<pre><code>{JSON.stringify(item, null, 2)}</code></pre>)}
                             </>
                         )}
                 </CardContent>
             </Card>
             {containingItemIds && (
-                <Card>
+                <Card className="containing-items">
                     <CardContent>
                         <h4>Items within:</h4>
                         <Divider />
@@ -221,7 +234,7 @@ function ViewItem(props: ViewItemProps) {
                     </CardContent>
                 </Card>
             )}
-        </>
+        </div>
     );
 }
 export default ViewItem;

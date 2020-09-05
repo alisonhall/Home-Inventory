@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
 
-import { Card, CardContent, TextField, Divider, Button, IconButton } from '@material-ui/core';
+import { Card, CardContent, TextField, TextareaAutosize, Divider, Button, IconButton } from '@material-ui/core';
 import { PhotoCamera as PhotoCameraIcon, Delete as DeleteIcon, Save as SaveIcon, FileCopy as FileCopyIcon } from '@material-ui/icons';
 
 import { itemsRef, databaseRef, locationsRef, storage } from './firebase';
 import Loader from './Loader';
+import './EditForm.scss';
 
 declare global {
     interface FileList {
@@ -17,6 +18,7 @@ declare global {
 type Item = {
     id?: string | null | undefined,
     name?: string,
+    notes?: string,
     images?: string[],
     files?: string[],
     containing?: string[],
@@ -41,6 +43,7 @@ function EditForm(props: EditFormProps) {
     const [parentItem, setParentItem] = useState<Item | undefined>(undefined);
     const [locationIds, setLocationIds] = useState<string[]>([]);
     const [name, setName] = useState("");
+    const [notes, setNotes] = useState("");
     const [imageUrls, setImageURLs] = useState<string[]>([]);
     const [fileUrls, setFileURLs] = useState<string[]>([]);
 
@@ -192,7 +195,8 @@ function EditForm(props: EditFormProps) {
             // Data of the item to be created or updated
             const updatedItem = {
                 ...item,
-                name: name,
+                name,
+                notes,
                 images: imageUrls,
                 files: fileUrls
             };
@@ -277,7 +281,7 @@ function EditForm(props: EditFormProps) {
     }
 
     return (
-        <Card>
+        <Card className="edit-form">
             <CardContent>
                 {isLoading
                     ? <Loader />
@@ -294,6 +298,15 @@ function EditForm(props: EditFormProps) {
                                     label="Name"
                                     variant="outlined"
                                 />
+                                <TextareaAutosize
+                                    style={{ width: "99%" }}
+                                    rowsMin={3}
+                                    className="notes"
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                    aria-label="Notes"
+                                    placeholder="Notes"
+                                />
                                 <input
                                     type="file"
                                     id="icon-button-file"
@@ -302,21 +315,30 @@ function EditForm(props: EditFormProps) {
                                     accept="image/*,.pdf"
                                     multiple
                                 />
-                                <label htmlFor="icon-button-file">
-                                    <IconButton color="primary" aria-label="upload file" component="span">
-                                        <PhotoCameraIcon />
-                                    </IconButton>
+                                <label htmlFor="icon-button-file" className="upload-button">
+                                    <Button
+                                        className="save-button"
+                                        variant="contained"
+                                        color="primary"
+                                        size="small"
+                                        startIcon={<PhotoCameraIcon />}
+                                        onClick={saveItem}
+                                    >
+                                        Upload image or file
+                                    </Button>
                                 </label>
+                                <Divider />
                                 <Button
+                                    className="save-button"
                                     variant="contained"
-                                    color="primary"
+                                    color="secondary"
                                     size="small"
                                     startIcon={<SaveIcon />}
                                     onClick={saveItem}
                                 >
                                     Save
                                 </Button>
-                                <Link to={itemId ? `/view/${itemId}` : (parentId ? `/view/${parentId}` : `/`)}>
+                                <Link className="cancel-button" to={itemId ? `/view/${itemId}` : (parentId ? `/view/${parentId}` : `/`)}>
                                     Cancel
                                 </Link>
                             </form>

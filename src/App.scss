@@ -51,8 +51,8 @@
 
         + .MuiSwitch-track {
           background-color: #f06292;
-    }
-  }
+        }
+      }
     }
   }
 
@@ -73,12 +73,23 @@
     padding: 8px;
   }
 
-  .preview-image {
-    max-width: 100px;
-    max-height: 100px;
-  }
-
   .MuiCard-root {
     margin-top: 10px;
+  }
+
+  .MuiFab-secondary {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+
+    a {
+      color: inherit;
+    }
+  }
+  
+  .link-icon {
+    width: 2.4rem;
+    height: 2.4rem;
+    color: inherit;
   }
 }
