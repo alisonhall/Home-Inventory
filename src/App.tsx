@@ -6,17 +6,18 @@ import {
   Link
 } from 'react-router-dom';
 
-import { AppBar, Toolbar, Container, Typography, Switch as ToggleSwitch, Button } from '@material-ui/core';
+import { AppBar, Toolbar, Container, Switch as ToggleSwitch, Button } from '@material-ui/core';
 
 import { signIn, signOut, checkLoggedInStatus } from './firebase';
 import Home from './Home';
 import EditForm from './EditForm';
 import ViewItem from './ViewItem';
 import './App.scss';
+import Loader from './Loader';
 
 function App() {
   const [showJSON, setShowJSON] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | undefined>();
 
   // Get the logged in status from Firebase auth
   useEffect(() => {
@@ -48,10 +49,10 @@ function App() {
   return (
     <Router>
       <div className="app">
-          <AppBar position="static">
-            <Toolbar>
+        <AppBar position="static">
+          <Toolbar>
             <div className="logo">
-                <Link to="/">Home Inventory</Link>
+              <Link to="/">Home Inventory</Link>
             </div>
             <label>
               Show RAW data
@@ -63,15 +64,16 @@ function App() {
                 inputProps={{ 'aria-label': 'Toggle JSON' }}
               />
             </label>
-            {isLoggedIn
-                ? <Button color="inherit" onClick={signOut}>Logout</Button>
-                : <Button color="inherit" onClick={signIn}>Login</Button>}
-            </Toolbar>
-          </AppBar>
+            {typeof isLoggedIn !== 'undefined' && (isLoggedIn
+              ? <Button color="inherit" onClick={signOut}>Logout</Button>
+              : <Button color="inherit" onClick={signIn}>Login</Button>)}
+          </Toolbar>
+        </AppBar>
         <Container className="container" maxWidth="sm">
-          {isLoggedIn
+          {typeof isLoggedIn === 'undefined' && <Loader />}
+          {typeof isLoggedIn !== 'undefined' && (isLoggedIn
             ? routes
-            : <p>You must login</p>}
+            : <p>You must login to use this app.</p>)}
         </Container>
       </div>
     </Router>

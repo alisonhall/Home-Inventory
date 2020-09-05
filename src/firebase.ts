@@ -42,7 +42,7 @@ export const signOut = () => (
     })
 );
 
-export const checkLoggedInStatus = (setIsLoggedIn: Dispatch<SetStateAction<boolean>>) => {
+export const checkLoggedInStatus = (setIsLoggedIn: Dispatch<SetStateAction<boolean | undefined>>) => {
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             setIsLoggedIn(true);
