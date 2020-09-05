@@ -48,12 +48,13 @@ function App() {
   return (
     <Router>
       <div className="app">
-        <Container className="container" maxWidth="sm">
           <AppBar position="static">
             <Toolbar>
-              <Typography variant="h6">
+            <div className="logo">
                 <Link to="/">Home Inventory</Link>
-              </Typography>
+            </div>
+            <label>
+              Show RAW data
               <ToggleSwitch
                 checked={showJSON}
                 onChange={e => setShowJSON(!showJSON)}
@@ -61,11 +62,13 @@ function App() {
                 color="primary"
                 inputProps={{ 'aria-label': 'Toggle JSON' }}
               />
-              {isLoggedIn
+            </label>
+            {isLoggedIn
                 ? <Button color="inherit" onClick={signOut}>Logout</Button>
                 : <Button color="inherit" onClick={signIn}>Login</Button>}
             </Toolbar>
           </AppBar>
+        <Container className="container" maxWidth="sm">
           {isLoggedIn
             ? routes
             : <p>You must login</p>}
