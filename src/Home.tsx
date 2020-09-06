@@ -34,11 +34,9 @@ function Home(props: HomeProps) {
                     ? <Loader />
                     : (
                         <>
-                            <h3>Locations</h3>
-                            <Fab color="secondary" title="Add new location">
-                                <Link aria-label="add new location" to="/add-location">
-                                    <AddIcon fontSize="large" />
-                                </Link>
+                            <h1>Locations</h1>
+                            <Fab color="secondary" title="Add new location" aria-label="add new location" component={Link} to="/add-location">
+                                <AddIcon fontSize="large" />
                             </Fab>
                             <ItemsList itemsList={locations} {...props} withinCard />
                         </>

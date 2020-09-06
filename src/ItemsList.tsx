@@ -41,7 +41,7 @@ function ItemsList(props: ItemsListProps) {
     return (
         <Card>
             <CardContent>
-                <h3>Items</h3>
+                <h2>Items</h2>
                 {content}
             </CardContent>
         </Card>

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Badge } from '@material-ui/core';
 
 import { itemsRef } from './firebase';
+import { ItemType as Item } from './App';
 import Loader from './Loader';
 import './ItemPreview.scss';
 
@@ -11,16 +12,6 @@ type ItemPreviewProps = {
     itemId: string,
     showJSON: boolean
 }
-
-type Item = {
-    id?: string,
-    name?: string,
-    notes?: string,
-    images?: string[],
-    files?: string[],
-    containing?: string[],
-    containedWithin?: string
-};
 
 function ItemPreview(props: ItemPreviewProps) {
     const { itemId, showJSON } = props;
@@ -62,7 +53,7 @@ function ItemPreview(props: ItemPreviewProps) {
                                 </div>
                             </Badge>
                             <div className="preview-content">
-                                <p>{item.name}</p>
+                                <h3>{item.name}</h3>
                             </div>
                         </Link>
                         {showJSON && (<pre><code>{JSON.stringify(item, null, 2)}</code></pre>)}

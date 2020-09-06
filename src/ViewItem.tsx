@@ -5,21 +5,13 @@ import { Card, CardContent, Divider, Fab, IconButton, Button } from '@material-u
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, FileCopy as FileCopyIcon, ArrowBackIos as ArrowBackIosIcon } from '@material-ui/icons';
 
 import { databaseRef, itemsRef, locationsRef } from './firebase';
+import { ItemType as Item } from './App';
 import ItemPreview from './ItemPreview';
 import Loader from './Loader';
 import './ViewItem.scss';
 
 type ParamsType = {
     itemId: string
-}
-
-interface Item {
-    id?: string,
-    name?: string,
-    images?: string[],
-    files?: string[],
-    containing?: string[],
-    containedWithin?: string
 }
 
 type ViewItemProps = {
@@ -109,6 +101,8 @@ function ViewItem(props: ViewItemProps) {
                         // Remove the item
                         updates[`/items/${itemId}`] = null;
 
+                        console.warn('Removing item', { updates });
+
                         // Apply the updates to the Firebase database
                         databaseRef.update(updates, function (error) {
                             if (error) {
@@ -116,7 +110,7 @@ function ViewItem(props: ViewItemProps) {
                                 console.error(error);
                             }
                         });
-                        
+
                         // Redirect the page to view the parent item
                         return history.push(`/view/${withinItem && withinItem.id}`);
                     } else {
@@ -138,6 +132,8 @@ function ViewItem(props: ViewItemProps) {
                         updates[`/locations`] = [...updatedLocations];
                         // Remove the item
                         updates[`/items/${itemId}`] = null;
+
+                        console.warn('Removing location', { updates });
 
                         // Apply the updates to the Firebase database
                         databaseRef.update(updates, function (error) {
@@ -169,52 +165,59 @@ function ViewItem(props: ViewItemProps) {
                         ? <Loader />
                         : (
                             <>
-                                {withinItem && (
-                                    <Button
-                                        className="parent-item-link"
-                                        variant="contained"
-                                        startIcon={<ArrowBackIosIcon />}
-                                    >
-                                        <Link aria-label="view parent item" to={`/view/${withinItem.id}`}>
-                                            Within {withinItem.name}
+                                <div className="actions">
+                                    {withinItem && (
+                                        <Button
+                                            className="parent-item-link"
+                                            variant="contained"
+                                            startIcon={<ArrowBackIosIcon />}
+                                            component={Link}
+                                            to={`/view/${withinItem.id}`}
+                                        >
+                                            Go back to {withinItem.name}
+                                        </Button>
+                                    )}
+                                    {!withinItem && (
+                                        <Button
+                                            className="parent-item-link"
+                                            variant="contained"
+                                            startIcon={<ArrowBackIosIcon />}
+                                            component={Link}
+                                            to="/"
+                                        >
+                                            Go back to All Locations
+                                        </Button>
+                                    )}
+                                    <Fab title="Add item within" color="secondary">
+                                        <Link className="link-icon" aria-label="add new item within" to={`/add/${item.id}`}>
+                                            <AddIcon fontSize="large" />
                                         </Link>
-                                    </Button>
-                                )}
-                                {!withinItem && (
-                                    <Button
-                                        className="parent-item-link"
-                                        variant="contained"
-                                        startIcon={<ArrowBackIosIcon />}
-                                    >
-                                        <Link aria-label="view locations" to="/" >
-                                            Go to All Locations
+                                    </Fab>
+                                    <IconButton title="Edit item" color="primary">
+                                        <Link className="link-icon" aria-label="edit item" to={`/edit/${item.id}`}>
+                                            <EditIcon fontSize="large" />
                                         </Link>
-                                    </Button>
-                                )}
-                                <h3>{item.name}</h3>
-                                {item.images && item.images.map((image, index) => (
-                                    <Link to={image} key={index}>
-                                        <img src={image} alt="" className="preview-image" />
-                                    </Link>
-                                ))}
-                                {item.files && item.files.map((file, index) => (
-                                    <Link to={file} key={index}>
-                                        <FileCopyIcon />
-                                    </Link>
-                                ))}
-                                <Fab title="Add item within" color="secondary">
-                                    <Link className="link-icon" aria-label="add new item within" to={`/add/${item.id}`}>
-                                        <AddIcon fontSize="large" />
-                                    </Link>
-                                </Fab>
-                                <IconButton title="Edit item" color="primary">
-                                    <Link className="link-icon" aria-label="edit item" to={`/edit/${item.id}`}>
-                                        <EditIcon fontSize="large" />
-                                    </Link>
-                                </IconButton>
-                                <IconButton title="Delete item" aria-label="delete item" color="primary" onClick={deleteItem}>
-                                    <DeleteIcon fontSize="large" />
-                                </IconButton>
+                                    </IconButton>
+                                    <IconButton title="Delete item" aria-label="delete item" color="primary" onClick={deleteItem}>
+                                        <DeleteIcon fontSize="large" />
+                                    </IconButton>
+                                </div>
+                                <h1>{item.name}</h1>
+                                <p>{item.notes}</p>
+                                <p>{item.expiryDate}</p>
+                                {(item.images || item.files || showJSON) && <Divider />}
+                                <div className="assets">
+                                    {item.images && item.images.map((image, index) => (
+                                        <a className="image-link" href={image} key={index}>
+                                            <img src={image} alt="" className="image" />
+                                        </a>
+                                    ))}
+                                    {item.files && item.files.map((file, index) => (
+                                        <a className="file-link" href={file} key={index}>
+                                            <FileCopyIcon />
+                                        </a>
+                                    ))}
+                                </div>
                                 {showJSON && (<pre><code>{JSON.stringify(item, null, 2)}</code></pre>)}
                             </>
                         )}
@@ -223,7 +226,7 @@ function ViewItem(props: ViewItemProps) {
             {containingItemIds && (
                 <Card className="containing-items">
                     <CardContent>
-                        <h4>Items within:</h4>
+                        <h2>Items within:</h2>
                         <Divider />
                         {containingItemIds && containingItemIds.map((itemId: string, i: number) => (
                             <React.Fragment key={i}>
