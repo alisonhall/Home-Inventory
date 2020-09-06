@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
+import DateFnsUtils from '@date-io/date-fns';
 
-import { Card, CardContent, TextField, TextareaAutosize, Divider, Button, IconButton } from '@material-ui/core';
+import { Card, CardContent, TextField, Divider, Button, IconButton } from '@material-ui/core';
+import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { PhotoCamera as PhotoCameraIcon, Delete as DeleteIcon, Save as SaveIcon, FileCopy as FileCopyIcon } from '@material-ui/icons';
 
 import { itemsRef, databaseRef, locationsRef, storage } from './firebase';
+import { ItemType as Item } from './App';
 import Loader from './Loader';
 import './EditForm.scss';
 
@@ -13,16 +16,6 @@ declare global {
     interface FileList {
         forEach(callback: (f: File) => void) : void;
     }
-}
-
-type Item = {
-    id?: string | null | undefined,
-    name?: string,
-    notes?: string,
-    images?: string[],
-    files?: string[],
-    containing?: string[],
-    containedWithin?: string
 }
 
 type ParamsType = {
@@ -44,6 +37,7 @@ function EditForm(props: EditFormProps) {
     const [locationIds, setLocationIds] = useState<string[]>([]);
     const [name, setName] = useState("");
     const [notes, setNotes] = useState("");
+    const [expiryDate, setExpiryDate] = useState<any>(null);
     const [imageUrls, setImageURLs] = useState<string[]>([]);
     const [fileUrls, setFileURLs] = useState<string[]>([]);
 
@@ -53,8 +47,9 @@ function EditForm(props: EditFormProps) {
             let item = snapshot.val();
             setItem(item);
             setName(item.name);
-            setImageURLs(item.images);
-            setFileURLs(item.files);
+            setExpiryDate(item.expiryDate || null);
+            setImageURLs(item.images || []);
+            setFileURLs(item.files || []);
             setIsLoading(false);
         });
         return () => { itemId && itemsRef.child(itemId).off(); }
@@ -101,7 +96,6 @@ function EditForm(props: EditFormProps) {
 
             // Upload all selected files
             const uploadImagePromise = new Promise((resolve, reject) => {
-                setIsLoading(true);
                 fileItems && Array.from(fileItems).forEach(fileItem => {
                     // Upload a single file
                     if (fileItem && fileItem.name) {
@@ -133,6 +127,8 @@ function EditForm(props: EditFormProps) {
                                                     .getDownloadURL()
                                                     .then((url) => {
                                                         newImageUrls.push(url);
+                                                        console.warn('Uploaded image', { name: fileItem.name, url, newImageUrls });
+                                                        resolve(true);
                                                     });
                                             });
                                         } catch (error) {
@@ -157,6 +153,8 @@ function EditForm(props: EditFormProps) {
                                             .getDownloadURL()
                                             .then((url) => {
                                                 newFileUrls.push(url);
+                                                console.warn('Uploaded file', { name: fileItem.name, url, newFileUrls });
+                                                resolve(true);
                                             });
                                     });
                                 } catch (error) {
@@ -169,15 +167,13 @@ function EditForm(props: EditFormProps) {
                         reject('No image/file provided');
                     }
                 });
-
-                resolve(true);
             });
 
             // Update the changed image and file URLs within the component state once all of the files have finished uploading
             uploadImagePromise.then(result => {
-                setImageURLs(newImageUrls);
-                setFileURLs(newFileUrls);
-                setIsLoading(false);
+                setImageURLs(newImageUrls || []);
+                setFileURLs(newFileUrls || []);
+                console.warn('Upload complete', { result, newImageUrls, newFileUrls });
             }, function (error) {
                 console.error('ERROR:', error);
             });
@@ -197,6 +193,7 @@ function EditForm(props: EditFormProps) {
                 ...item,
                 name,
                 notes,
+                expiryDate,
                 images: imageUrls,
                 files: fileUrls
             };
@@ -206,6 +203,10 @@ function EditForm(props: EditFormProps) {
             if (itemId) {
                 // Editing an item
                 updates[`/items/${itemKey}`] = updatedItem;
+
+                console.warn('Editing item', { itemKey, updates });
+
+                // Applying the change to the Firebase database
                 databaseRef.update(updates, function (error) {
                     if (error) {
                         alert('The updating of data failed!');
@@ -232,6 +233,8 @@ function EditForm(props: EditFormProps) {
                     itemKey && containingItemIds.push(itemKey);
                     updates[`/items/${parentId}/containing`] = containingItemIds;
                 }
+
+                console.warn('Creating a new item', { itemKey, updates });
                 
                 // Apply the updates to the Firebase database
                 databaseRef.update(updates, function (error) {
@@ -250,6 +253,8 @@ function EditForm(props: EditFormProps) {
                 updates[`/items/${itemKey}`] = updatedItem;
                 updates[`/locations`] = [...locationIds, itemKey];
 
+                console.warn('Creating a new location', { itemKey, updates });
+
                 // Apply the updates to the Firebase database
                 databaseRef.update(updates, function (error) {
                     if (error) {
@@ -262,6 +267,7 @@ function EditForm(props: EditFormProps) {
             // Redirect the page to view the newly created item
             return history.push(`/view/${itemKey}`)
         } catch (error) {
+            alert('Error when saving!');
             console.error('ERROR in EditForm.jsx, saveItem function', error);
         }
     };
@@ -270,13 +276,17 @@ function EditForm(props: EditFormProps) {
         if (type === 'image') {
             // Remove the specified image from the image URLs list state
             const updatedUrls = [...imageUrls];
-            updatedUrls.splice(index, 1);
+            const removedImage = updatedUrls.splice(index, 1);
             setImageURLs(updatedUrls);
+
+            console.warn('Removing an image', { updatedUrls, removedImage });
         } else {
             // Remove the specified file from the file URLs list state
             const updatedUrls = [...fileUrls];
-            updatedUrls.splice(index, 1);
+            const removedFile = updatedUrls.splice(index, 1);
             setFileURLs(updatedUrls);
+
+            console.warn('Removing a file', { updatedUrls, removedFile });
         }
     }
 
@@ -286,81 +296,100 @@ function EditForm(props: EditFormProps) {
                 {isLoading
                     ? <Loader />
                     : (
-                        <>
-                            <h3>{actionType}</h3>
-                            {showJSON && item && (<pre><code>{JSON.stringify(item, null, 2)}</code></pre>)}
-                            <form onSubmit={saveItem}>
-                                <TextField
-                                    style={{ width: "100%" }}
-                                    id="outlined-basic"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    label="Name"
-                                    variant="outlined"
-                                />
-                                <TextareaAutosize
-                                    style={{ width: "99%" }}
-                                    rowsMin={3}
-                                    className="notes"
-                                    value={notes}
-                                    onChange={(e) => setNotes(e.target.value)}
-                                    aria-label="Notes"
-                                    placeholder="Notes"
-                                />
-                                <input
-                                    type="file"
-                                    id="icon-button-file"
-                                    onChange={(e) => handleImageUpload(e)}
-                                    capture="environment"
-                                    accept="image/*,.pdf"
-                                    multiple
-                                />
-                                <label htmlFor="icon-button-file" className="upload-button">
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <>
+                                <h3>{actionType}</h3>
+                                {showJSON && item && (<pre><code>{JSON.stringify(item, null, 2)}</code></pre>)}
+                                <form onSubmit={saveItem}>
+                                    <TextField
+                                        style={{ width: "100%" }}
+                                        id="name"
+                                        className="input name"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        label="Name"
+                                        variant="outlined"
+                                    />
+                                    <TextField
+                                        style={{ width: "100%" }}
+                                        id="notes"
+                                        className="input notes"
+                                        value={notes}
+                                        onChange={(e) => setNotes(e.target.value)}
+                                        label="Notes"
+                                        variant="outlined"
+                                        multiline
+                                        rows={3}
+                                    />
+                                    <KeyboardDatePicker
+                                        style={{ width: "100%" }}
+                                        autoOk
+                                        variant="inline"
+                                        inputVariant="outlined"
+                                        id="expiry"
+                                        className="input expiry"
+                                        label="Expiry Date"
+                                        format="MM/dd/yyyy"
+                                        value={expiryDate}
+                                        onChange={setExpiryDate}
+                                        InputAdornmentProps={{ position: "end" }}
+                                    />
+                                    <input
+                                        type="file"
+                                        id="upload"
+                                        className="input upload"
+                                        onChange={(e) => handleImageUpload(e)}
+                                        capture="environment"
+                                        accept="image/*,.pdf"
+                                    />
+                                    <label htmlFor="upload" className="upload-button">
+                                        <Button
+                                            className="upload-button"
+                                            variant="contained"
+                                            color="primary"
+                                            size="small"
+                                            component="span"
+                                            startIcon={<PhotoCameraIcon />}
+                                        >
+                                            Upload image or file
+                                        </Button>
+                                    </label>
+                                    <Divider />
                                     <Button
                                         className="save-button"
                                         variant="contained"
-                                        color="primary"
-                                        size="small"
-                                        startIcon={<PhotoCameraIcon />}
+                                        color="secondary"
+                                        startIcon={<SaveIcon />}
                                         onClick={saveItem}
                                     >
-                                        Upload image or file
+                                        Save
                                     </Button>
-                                </label>
+                                    <Button className="cancel-button" variant="outlined" component={Link} to={itemId ? `/view/${itemId}` : (parentId ? `/view/${parentId}` : `/`)}>
+                                        Cancel
+                                    </Button>
+                                </form>
                                 <Divider />
-                                <Button
-                                    className="save-button"
-                                    variant="contained"
-                                    color="secondary"
-                                    size="small"
-                                    startIcon={<SaveIcon />}
-                                    onClick={saveItem}
-                                >
-                                    Save
-                                </Button>
-                                <Link className="cancel-button" to={itemId ? `/view/${itemId}` : (parentId ? `/view/${parentId}` : `/`)}>
-                                    Cancel
-                                </Link>
-                            </form>
-                            <Divider />
 
-                            {imageUrls && imageUrls.map((url, index) => (
-                                <div className="image" key={index}>
-                                    <img src={url} alt="" className="preview-image" />
-                                    <IconButton aria-label="delete" onClick={e => deleteImage('image', index)}>
-                                        <DeleteIcon fontSize="small" />
-                                    </IconButton>
-                                </div>
-                            ))}
-                            {fileUrls && fileUrls.map((url, index) => (
-                                <div className="file" key={index}>
-                                    <FileCopyIcon fontSize="large" />
-                                    <IconButton aria-label="delete" onClick={e => deleteImage('file', index)}>
-                                        <DeleteIcon fontSize="small" />
-                                    </IconButton>
-                                </div>
-                            ))}
-                        </>
+                                {imageUrls && imageUrls.map((url, index) => (
+                                    <div className="image-container" key={index}>
+                                        <div className="preview-image">
+                                            <img src={url} alt="" className="image" />
+                                        </div>
+                                        <IconButton aria-label="delete" onClick={e => deleteImage('image', index)}>
+                                            <DeleteIcon fontSize="small" />
+                                        </IconButton>
+                                    </div>
+                                ))}
+                                {fileUrls && fileUrls.map((url, index) => (
+                                    <div className="file-container" key={index}>
+                                        <FileCopyIcon fontSize="large" />
+                                        <IconButton aria-label="delete" onClick={e => deleteImage('file', index)}>
+                                            <DeleteIcon fontSize="small" />
+                                        </IconButton>
+                                    </div>
+                                ))}
+                            </>
+                        </MuiPickersUtilsProvider>
                     )}
             </CardContent>
         </Card>
