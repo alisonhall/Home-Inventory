@@ -9,12 +9,12 @@ import {
 import { AppBar, Toolbar, Container, Switch as ToggleSwitch, Button } from '@material-ui/core';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
-import { signIn, signOut, checkLoggedInStatus } from './firebase';
-import Home from './Home';
-import EditForm from './EditForm';
-import ViewItem from './ViewItem';
+import { signIn, signOut, checkLoggedInStatus } from '../firebase';
+import Home from '../Home/Home';
+import EditForm from '../EditForm/EditForm';
+import ViewItem from '../ViewItem/ViewItem';
 import './App.scss';
-import Loader from './Loader';
+import Loader from '../Loader/Loader';
 
 const theme = createMuiTheme({
   palette: {

@@ -4,10 +4,10 @@ import { Link, useParams, useHistory } from 'react-router-dom';
 import { Card, CardContent, Divider, Fab, IconButton, Button } from '@material-ui/core';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, FileCopy as FileCopyIcon, ArrowBackIos as ArrowBackIosIcon } from '@material-ui/icons';
 
-import { databaseRef, itemsRef, locationsRef } from './firebase';
-import { ItemType as Item } from './App';
-import ItemPreview from './ItemPreview';
-import Loader from './Loader';
+import { databaseRef, itemsRef, locationsRef } from '../firebase';
+import { ItemType as Item } from '../App/App';
+import ItemPreview from '../ItemPreview/ItemPreview';
+import Loader from '../Loader/Loader';
 import './ViewItem.scss';
 
 type ParamsType = {

@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction } from 'react';
 
 import { Card, CardContent, Divider } from '@material-ui/core';
 
-import ItemPreview from './ItemPreview';
+import ItemPreview from '../ItemPreview/ItemPreview';
 
 type ItemsListProps = {
     itemsList: string[],

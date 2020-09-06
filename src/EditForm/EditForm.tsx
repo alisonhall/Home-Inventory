@@ -7,9 +7,9 @@ import { Card, CardContent, TextField, Divider, Button, IconButton } from '@mate
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { PhotoCamera as PhotoCameraIcon, Delete as DeleteIcon, Save as SaveIcon, FileCopy as FileCopyIcon } from '@material-ui/icons';
 
-import { itemsRef, databaseRef, locationsRef, storage } from './firebase';
-import { ItemType as Item } from './App';
-import Loader from './Loader';
+import { itemsRef, databaseRef, locationsRef, storage } from '../firebase';
+import { ItemType as Item } from '../App/App';
+import Loader from '../Loader/Loader';
 import './EditForm.scss';
 
 declare global {

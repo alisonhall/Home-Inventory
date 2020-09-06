@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 
 import { Badge } from '@material-ui/core';
 
-import { itemsRef } from './firebase';
-import { ItemType as Item } from './App';
-import Loader from './Loader';
+import { itemsRef } from '../firebase';
+import { ItemType as Item } from '../App/App';
+import Loader from '../Loader/Loader';
 import './ItemPreview.scss';
 
 type ItemPreviewProps = {

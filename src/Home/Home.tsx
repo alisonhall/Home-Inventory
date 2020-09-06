@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, Fab } from '@material-ui/core';
 import { Add as AddIcon } from '@material-ui/icons';
 
-import { locationsRef } from './firebase';
-import ItemsList from './ItemsList';
-import Loader from './Loader';
+import { locationsRef } from '../firebase';
+import ItemsList from '../ItemsList/ItemsList';
+import Loader from '../Loader/Loader';
 
 type HomeProps = {
     showJSON: boolean,
