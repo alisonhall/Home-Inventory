@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { Link, useParams, useHistory } from 'react-router-dom';
 
 import { Card, CardContent, Divider, Fab, IconButton, Button } from '@material-ui/core';
@@ -15,7 +15,9 @@ type ParamsType = {
 }
 
 type ViewItemProps = {
-    showJSON: boolean
+    showJSON: boolean,
+    moveList: string[],
+    setMoveList: Dispatch<SetStateAction<string[]>>
 }
 
 function ViewItem(props: ViewItemProps) {

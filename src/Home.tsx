@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Card, CardContent, Fab } from '@material-ui/core';
@@ -9,7 +9,9 @@ import ItemsList from './ItemsList';
 import Loader from './Loader';
 
 type HomeProps = {
-    showJSON: boolean
+    showJSON: boolean,
+    moveList: string[],
+    setMoveList: Dispatch<SetStateAction<string[]>>
 }
 
 function Home(props: HomeProps) {

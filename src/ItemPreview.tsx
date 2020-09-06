@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Badge } from '@material-ui/core';
@@ -10,7 +10,9 @@ import './ItemPreview.scss';
 
 type ItemPreviewProps = {
     itemId: string,
-    showJSON: boolean
+    showJSON: boolean,
+    moveList: string[],
+    setMoveList: Dispatch<SetStateAction<string[]>>
 }
 
 function ItemPreview(props: ItemPreviewProps) {

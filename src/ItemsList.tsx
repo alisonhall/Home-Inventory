@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 
 import { Card, CardContent, Divider } from '@material-ui/core';
 
@@ -7,7 +7,9 @@ import ItemPreview from './ItemPreview';
 type ItemsListProps = {
     itemsList: string[],
     withinCard: boolean,
-    showJSON: boolean
+    showJSON: boolean,
+    moveList: string[],
+    setMoveList: Dispatch<SetStateAction<string[]>>
 }
 
 function ItemsList(props: ItemsListProps) {

@@ -41,24 +41,27 @@ export type ItemType = {
 function App() {
   const [showJSON, setShowJSON] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | undefined>();
+  const [moveList, setMoveList] = useState<string[]>([]);
 
   // Get the logged in status from Firebase auth
   useEffect(() => {
     checkLoggedInStatus(setIsLoggedIn);
   }, []);
 
-  const defaultProps = { showJSON };
+  const defaultProps = {
+    showJSON
+  };
 
   const routes = (
     <Switch>
       <Route exact path="/">
-        <Home {...defaultProps} />
+        <Home {...defaultProps} moveList={moveList} setMoveList={setMoveList} />
       </Route>
       <Route path="/add-location">
         <EditForm {...defaultProps} />
       </Route>
       <Route path="/view/:itemId">
-        <ViewItem {...defaultProps} />
+        <ViewItem {...defaultProps} moveList={moveList} setMoveList={setMoveList} />
       </Route>
       <Route path="/edit/:itemId">
         <EditForm {...defaultProps} />
