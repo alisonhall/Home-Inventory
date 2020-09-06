@@ -27,6 +27,17 @@ const theme = createMuiTheme({
   }
 });
 
+export type ItemType = {
+  id?: string | null | undefined,
+  name?: string,
+  notes?: string,
+  expiryDate?: any,
+  images?: string[],
+  files?: string[],
+  containing?: string[],
+  containedWithin?: string
+}
+
 function App() {
   const [showJSON, setShowJSON] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | undefined>();
