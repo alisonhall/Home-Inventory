@@ -1,7 +1,8 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Badge } from '@material-ui/core';
+import { Badge, IconButton } from '@material-ui/core';
+import { AddCircleOutline as AddCircleOutlineIcon } from '@material-ui/icons';
 
 import { itemsRef } from '../firebase';
 import { ItemType as Item, addToMoveList } from '../helpers';
@@ -16,7 +17,7 @@ type ItemPreviewProps = {
 }
 
 function ItemPreview(props: ItemPreviewProps) {
-    const { itemId, showJSON } = props;
+    const { itemId, showJSON, moveList, setMoveList } = props;
 
     const [isLoading, setIsLoading] = useState(true);
     const [item, setItem] = useState<Item | null>(null);
@@ -58,6 +59,9 @@ function ItemPreview(props: ItemPreviewProps) {
                                 <h3>{item.name}</h3>
                             </div>
                         </Link>
+                        <IconButton title="add item to move list" aria-label="add item to move list" onClick={() => addToMoveList({ moveList, itemId, setMoveList })}>
+                            <AddCircleOutlineIcon />
+                        </IconButton>
                         {showJSON && (<pre><code>{JSON.stringify(item, null, 2)}</code></pre>)}
                     </>
                 )}

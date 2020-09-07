@@ -1,0 +1,11 @@
+.move-list {
+    background: lightsteelblue;
+    display: flex;
+    flex-flow: row wrap;
+    padding-right: 80px;
+
+    .move-items-button {
+        position: absolute;
+        right: 10px;
+    }
+}
