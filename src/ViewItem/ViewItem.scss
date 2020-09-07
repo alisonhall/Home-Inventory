@@ -8,6 +8,7 @@
 
     .parent-item-link {
         flex: 1 1 auto;
+        max-width: calc(100% - 165px);
         margin-right: 40px;
         background-color: white;
 

@@ -190,7 +190,7 @@ function ViewItem(props: ViewItemProps) {
                                             Go back to All Locations
                                         </Button>
                                     )}
-                                    <Fab title="Add item within" color="secondary">
+                                    <Fab className="add-button" title="Add item within" color="secondary">
                                         <Link className="link-icon" aria-label="add new item within" to={`/add/${item.id}`}>
                                             <AddIcon fontSize="large" />
                                         </Link>
