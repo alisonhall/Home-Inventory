@@ -14,7 +14,6 @@ import Home from '../Home/Home';
 import EditForm from '../EditForm/EditForm';
 import ViewItem from '../ViewItem/ViewItem';
 import Loader from '../Loader/Loader';
-import MoveList from '../MoveList/MoveList';
 import './App.scss';
 
 const theme = createMuiTheme({
@@ -89,13 +88,14 @@ function App() {
                 : <Button color="inherit" onClick={signIn}>Login</Button>)}
             </Toolbar>
           </AppBar>
-          <MoveList {...defaultProps} moveList={moveList} setMoveList={setMoveList} />
-          <Container className="container" maxWidth="sm">
-            {typeof isLoggedIn === 'undefined' && <Loader />}
-            {typeof isLoggedIn !== 'undefined' && (isLoggedIn
-              ? routes
-              : <p>You must login to use this app.</p>)}
-          </Container>
+          {typeof isLoggedIn === 'undefined' && <Loader />}
+          {typeof isLoggedIn !== 'undefined' && (isLoggedIn
+            ? routes
+            : (
+              <Container className="container" maxWidth="sm">
+                <p>You must login to use this app.</p>
+              </Container>
+            ))}
         </div>
       </ThemeProvider>
     </Router>

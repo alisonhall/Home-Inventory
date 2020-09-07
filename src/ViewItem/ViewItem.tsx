@@ -1,11 +1,12 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { Link, useParams, useHistory } from 'react-router-dom';
 
-import { Card, CardContent, Divider, Fab, IconButton, Button } from '@material-ui/core';
+import { Container, Card, CardContent, Divider, Fab, IconButton, Button } from '@material-ui/core';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, FileCopy as FileCopyIcon, ArrowBackIos as ArrowBackIosIcon } from '@material-ui/icons';
 
 import { databaseRef, itemsRef, locationsRef } from '../firebase';
 import { ItemType as Item } from '../helpers';
+import MoveList from '../MoveList/MoveList';
 import ItemPreview from '../ItemPreview/ItemPreview';
 import Loader from '../Loader/Loader';
 import './ViewItem.scss';
@@ -22,7 +23,7 @@ type ViewItemProps = {
 
 function ViewItem(props: ViewItemProps) {
     let { itemId }: ParamsType = useParams();
-    const { showJSON } = props;
+    const { showJSON, moveList, setMoveList } = props;
 
     const [isLoading, setIsLoading] = useState(true);
     const [item, setItem] = useState<Item | null>(null);
@@ -160,86 +161,91 @@ function ViewItem(props: ViewItemProps) {
     };
 
     return (
-        <div className="view-item">
-            <Card className="view-item-content">
-                <CardContent>
-                    {isLoading
-                        ? <Loader />
-                        : (
-                            <>
-                                <div className="actions">
-                                    {withinItem && (
-                                        <Button
-                                            className="parent-item-link"
-                                            variant="contained"
-                                            startIcon={<ArrowBackIosIcon />}
-                                            component={Link}
-                                            to={`/view/${withinItem.id}`}
-                                        >
-                                            Go back to {withinItem.name}
-                                        </Button>
-                                    )}
-                                    {!withinItem && (
-                                        <Button
-                                            className="parent-item-link"
-                                            variant="contained"
-                                            startIcon={<ArrowBackIosIcon />}
-                                            component={Link}
-                                            to="/"
-                                        >
-                                            Go back to All Locations
-                                        </Button>
-                                    )}
-                                    <Fab className="add-button" title="Add item within" color="secondary">
-                                        <Link className="link-icon" aria-label="add new item within" to={`/add/${item.id}`}>
-                                            <AddIcon fontSize="large" />
-                                        </Link>
-                                    </Fab>
-                                    <IconButton title="Edit item" color="primary">
-                                        <Link className="link-icon" aria-label="edit item" to={`/edit/${item.id}`}>
-                                            <EditIcon fontSize="large" />
-                                        </Link>
-                                    </IconButton>
-                                    <IconButton title="Delete item" aria-label="delete item" color="primary" onClick={deleteItem}>
-                                        <DeleteIcon fontSize="large" />
-                                    </IconButton>
-                                </div>
-                                <h1>{item.name}</h1>
-                                <p>{item.notes}</p>
-                                <p>{item.expiryDate}</p>
-                                {(item.images || item.files || showJSON) && <Divider />}
-                                <div className="assets">
-                                    {item.images && item.images.map((image, index) => (
-                                        <a className="image-link" href={image} key={index}>
-                                            <img src={image} alt="" className="image" />
-                                        </a>
-                                    ))}
-                                    {item.files && item.files.map((file, index) => (
-                                        <a className="file-link" href={file} key={index}>
-                                            <FileCopyIcon />
-                                        </a>
-                                    ))}
-                                </div>
-                                {showJSON && (<pre><code>{JSON.stringify(item, null, 2)}</code></pre>)}
-                            </>
-                        )}
-                </CardContent>
-            </Card>
-            {containingItemIds && (
-                <Card className="containing-items">
-                    <CardContent>
-                        <h2>Items within:</h2>
-                        <Divider />
-                        {containingItemIds && containingItemIds.map((itemId: string, i: number) => (
-                            <React.Fragment key={i}>
-                                <ItemPreview itemId={itemId} {...props} />
-                                {i < containingItemIds.length - 1 && <Divider />}
-                            </React.Fragment>
-                        ))}
-                    </CardContent>
-                </Card>
-            )}
-        </div>
+        <>
+            <MoveList moveList={moveList} setMoveList={setMoveList} showJSON={showJSON} />
+            <Container className="container" maxWidth="sm">
+                <div className="view-item">
+                    <Card className="view-item-content">
+                        <CardContent>
+                            {isLoading
+                                ? <Loader />
+                                : (
+                                    <>
+                                        <div className="actions">
+                                            {withinItem && (
+                                                <Button
+                                                    className="parent-item-link"
+                                                    variant="contained"
+                                                    startIcon={<ArrowBackIosIcon />}
+                                                    component={Link}
+                                                    to={`/view/${withinItem.id}`}
+                                                >
+                                                    Go back to {withinItem.name}
+                                                </Button>
+                                            )}
+                                            {!withinItem && (
+                                                <Button
+                                                    className="parent-item-link"
+                                                    variant="contained"
+                                                    startIcon={<ArrowBackIosIcon />}
+                                                    component={Link}
+                                                    to="/"
+                                                >
+                                                    Go back to All Locations
+                                                </Button>
+                                            )}
+                                            <Fab className="add-button" title="Add item within" color="secondary">
+                                                <Link className="link-icon" aria-label="add new item within" to={`/add/${item.id}`}>
+                                                    <AddIcon fontSize="large" />
+                                                </Link>
+                                            </Fab>
+                                            <IconButton title="Edit item" color="primary">
+                                                <Link className="link-icon" aria-label="edit item" to={`/edit/${item.id}`}>
+                                                    <EditIcon fontSize="large" />
+                                                </Link>
+                                            </IconButton>
+                                            <IconButton title="Delete item" aria-label="delete item" color="primary" onClick={deleteItem}>
+                                                <DeleteIcon fontSize="large" />
+                                            </IconButton>
+                                        </div>
+                                        <h1>{item.name}</h1>
+                                        <p>{item.notes}</p>
+                                        <p>{item.expiryDate}</p>
+                                        {(item.images || item.files || showJSON) && <Divider />}
+                                        <div className="assets">
+                                            {item.images && item.images.map((image, index) => (
+                                                <a className="image-link" href={image} key={index}>
+                                                    <img src={image} alt="" className="image" />
+                                                </a>
+                                            ))}
+                                            {item.files && item.files.map((file, index) => (
+                                                <a className="file-link" href={file} key={index}>
+                                                    <FileCopyIcon />
+                                                </a>
+                                            ))}
+                                        </div>
+                                        {showJSON && (<pre><code>{JSON.stringify(item, null, 2)}</code></pre>)}
+                                    </>
+                                )}
+                        </CardContent>
+                    </Card>
+                    {containingItemIds && (
+                        <Card className="containing-items">
+                            <CardContent>
+                                <h2>Items within:</h2>
+                                <Divider />
+                                {containingItemIds && containingItemIds.map((itemId: string, i: number) => (
+                                    <React.Fragment key={i}>
+                                        <ItemPreview itemId={itemId} {...props} />
+                                        {i < containingItemIds.length - 1 && <Divider />}
+                                    </React.Fragment>
+                                ))}
+                            </CardContent>
+                        </Card>
+                    )}
+                </div>
+            </Container>
+        </>
     );
 }
 export default ViewItem;

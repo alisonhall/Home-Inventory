@@ -1,10 +1,11 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Card, CardContent, Fab } from '@material-ui/core';
+import { Container, Card, CardContent, Fab } from '@material-ui/core';
 import { Add as AddIcon } from '@material-ui/icons';
 
 import { locationsRef } from '../firebase';
+import MoveList from '../MoveList/MoveList';
 import ItemsList from '../ItemsList/ItemsList';
 import Loader from '../Loader/Loader';
 
@@ -30,21 +31,26 @@ function Home(props: HomeProps) {
     }, []);
 
     return (
-        <Card>
-            <CardContent>
-                {isLoading
-                    ? <Loader />
-                    : (
-                        <>
-                            <h1>Locations</h1>
-                            <Fab className="add-button" color="secondary" title="Add new location" aria-label="add new location" component={Link} to="/add-location">
-                                <AddIcon fontSize="large" />
-                            </Fab>
-                            <ItemsList itemsList={locations} {...props} withinCard />
-                        </>
-                    )}
-            </CardContent>
-        </Card>
+        <>
+            <MoveList {...props} />
+            <Container className="container" maxWidth="sm">
+                <Card>
+                    <CardContent>
+                        {isLoading
+                            ? <Loader />
+                            : (
+                                <>
+                                    <h1>Locations</h1>
+                                    <Fab className="add-button" color="secondary" title="Add new location" aria-label="add new location" component={Link} to="/add-location">
+                                        <AddIcon fontSize="large" />
+                                    </Fab>
+                                    <ItemsList itemsList={locations} {...props} withinCard />
+                                </>
+                            )}
+                    </CardContent>
+                </Card>
+            </Container>
+        </>
     );
 }
 export default Home;

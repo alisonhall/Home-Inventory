@@ -3,7 +3,7 @@ import { Link, useParams, useHistory } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
 import DateFnsUtils from '@date-io/date-fns';
 
-import { Card, CardContent, TextField, Divider, Button, IconButton } from '@material-ui/core';
+import { Container, Card, CardContent, TextField, Divider, Button, IconButton } from '@material-ui/core';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { PhotoCamera as PhotoCameraIcon, Delete as DeleteIcon, Save as SaveIcon, FileCopy as FileCopyIcon } from '@material-ui/icons';
 
@@ -265,7 +265,7 @@ function EditForm(props: EditFormProps) {
             }
             setIsLoading(false);
             // Redirect the page to view the newly created item
-            return history.push(`/view/${itemKey}`)
+            return history.push(`/view/${itemKey}`);
         } catch (error) {
             alert('Error when saving!');
             console.error('ERROR in EditForm.jsx, saveItem function', error);
@@ -291,108 +291,110 @@ function EditForm(props: EditFormProps) {
     }
 
     return (
-        <Card className="edit-form">
-            <CardContent>
-                {isLoading
-                    ? <Loader />
-                    : (
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <>
-                                <h3>{actionType}</h3>
-                                {showJSON && item && (<pre><code>{JSON.stringify(item, null, 2)}</code></pre>)}
-                                <form onSubmit={saveItem}>
-                                    <TextField
-                                        style={{ width: "100%" }}
-                                        id="name"
-                                        className="input name"
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                        label="Name"
-                                        variant="outlined"
-                                    />
-                                    <TextField
-                                        style={{ width: "100%" }}
-                                        id="notes"
-                                        className="input notes"
-                                        value={notes}
-                                        onChange={(e) => setNotes(e.target.value)}
-                                        label="Notes"
-                                        variant="outlined"
-                                        multiline
-                                        rows={3}
-                                    />
-                                    <KeyboardDatePicker
-                                        style={{ width: "100%" }}
-                                        autoOk
-                                        variant="inline"
-                                        inputVariant="outlined"
-                                        id="expiry"
-                                        className="input expiry"
-                                        label="Expiry Date"
-                                        format="MM/dd/yyyy"
-                                        value={expiryDate}
-                                        onChange={setExpiryDate}
-                                        InputAdornmentProps={{ position: "end" }}
-                                    />
-                                    <input
-                                        type="file"
-                                        id="upload"
-                                        className="input upload"
-                                        onChange={(e) => handleImageUpload(e)}
-                                        capture="environment"
-                                        accept="image/*,.pdf"
-                                    />
-                                    <label htmlFor="upload" className="upload-button">
+        <Container className="container" maxWidth="sm">
+            <Card className="edit-form">
+                <CardContent>
+                    {isLoading
+                        ? <Loader />
+                        : (
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <>
+                                    <h3>{actionType}</h3>
+                                    {showJSON && item && (<pre><code>{JSON.stringify(item, null, 2)}</code></pre>)}
+                                    <form onSubmit={saveItem}>
+                                        <TextField
+                                            style={{ width: "100%" }}
+                                            id="name"
+                                            className="input name"
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                            label="Name"
+                                            variant="outlined"
+                                        />
+                                        <TextField
+                                            style={{ width: "100%" }}
+                                            id="notes"
+                                            className="input notes"
+                                            value={notes}
+                                            onChange={(e) => setNotes(e.target.value)}
+                                            label="Notes"
+                                            variant="outlined"
+                                            multiline
+                                            rows={3}
+                                        />
+                                        <KeyboardDatePicker
+                                            style={{ width: "100%" }}
+                                            autoOk
+                                            variant="inline"
+                                            inputVariant="outlined"
+                                            id="expiry"
+                                            className="input expiry"
+                                            label="Expiry Date"
+                                            format="MM/dd/yyyy"
+                                            value={expiryDate}
+                                            onChange={setExpiryDate}
+                                            InputAdornmentProps={{ position: "end" }}
+                                        />
+                                        <input
+                                            type="file"
+                                            id="upload"
+                                            className="input upload"
+                                            onChange={(e) => handleImageUpload(e)}
+                                            capture="environment"
+                                            accept="image/*,.pdf"
+                                        />
+                                        <label htmlFor="upload" className="upload-button">
+                                            <Button
+                                                className="upload-button"
+                                                variant="contained"
+                                                color="primary"
+                                                size="small"
+                                                component="span"
+                                                startIcon={<PhotoCameraIcon />}
+                                            >
+                                                Upload image or file
+                                            </Button>
+                                        </label>
+                                        <Divider />
                                         <Button
-                                            className="upload-button"
+                                            className="save-button"
                                             variant="contained"
-                                            color="primary"
-                                            size="small"
-                                            component="span"
-                                            startIcon={<PhotoCameraIcon />}
+                                            color="secondary"
+                                            startIcon={<SaveIcon />}
+                                            onClick={saveItem}
                                         >
-                                            Upload image or file
+                                            Save
                                         </Button>
-                                    </label>
+                                        <Button className="cancel-button" variant="outlined" component={Link} to={itemId ? `/view/${itemId}` : (parentId ? `/view/${parentId}` : `/`)}>
+                                            Cancel
+                                        </Button>
+                                    </form>
                                     <Divider />
-                                    <Button
-                                        className="save-button"
-                                        variant="contained"
-                                        color="secondary"
-                                        startIcon={<SaveIcon />}
-                                        onClick={saveItem}
-                                    >
-                                        Save
-                                    </Button>
-                                    <Button className="cancel-button" variant="outlined" component={Link} to={itemId ? `/view/${itemId}` : (parentId ? `/view/${parentId}` : `/`)}>
-                                        Cancel
-                                    </Button>
-                                </form>
-                                <Divider />
 
-                                {imageUrls && imageUrls.map((url, index) => (
-                                    <div className="image-container" key={index}>
-                                        <div className="preview-image">
-                                            <img src={url} alt="" className="image" />
+                                    {imageUrls && imageUrls.map((url, index) => (
+                                        <div className="image-container" key={index}>
+                                            <div className="preview-image">
+                                                <img src={url} alt="" className="image" />
+                                            </div>
+                                            <IconButton aria-label="delete" onClick={() => deleteImage('image', index)}>
+                                                <DeleteIcon fontSize="small" />
+                                            </IconButton>
                                         </div>
-                                        <IconButton aria-label="delete" onClick={() => deleteImage('image', index)}>
-                                            <DeleteIcon fontSize="small" />
-                                        </IconButton>
-                                    </div>
-                                ))}
-                                {fileUrls && fileUrls.map((url, index) => (
-                                    <div className="file-container" key={index}>
-                                        <FileCopyIcon fontSize="large" />
-                                        <IconButton aria-label="delete" onClick={() => deleteImage('file', index)}>
-                                            <DeleteIcon fontSize="small" />
-                                        </IconButton>
-                                    </div>
-                                ))}
-                            </>
-                        </MuiPickersUtilsProvider>
-                    )}
-            </CardContent>
-        </Card>
+                                    ))}
+                                    {fileUrls && fileUrls.map((url, index) => (
+                                        <div className="file-container" key={index}>
+                                            <FileCopyIcon fontSize="large" />
+                                            <IconButton aria-label="delete" onClick={() => deleteImage('file', index)}>
+                                                <DeleteIcon fontSize="small" />
+                                            </IconButton>
+                                        </div>
+                                    ))}
+                                </>
+                            </MuiPickersUtilsProvider>
+                        )}
+                </CardContent>
+            </Card>
+        </Container>
     );
 }
 export default EditForm;

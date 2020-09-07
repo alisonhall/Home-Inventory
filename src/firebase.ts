@@ -57,4 +57,12 @@ export const db = firebase.database();
 export const databaseRef = firebase.database().ref();
 export const locationsRef = databaseRef.child("locations")
 export const itemsRef = databaseRef.child("items")
+
+export const getItemDataOnce = (itemId: string) => {
+    return db.ref(`/items/${itemId}`).once('value').then(function (snapshot) {
+        const item = snapshot.val();
+        return item;
+    });
+}
+
 export default firebase;
