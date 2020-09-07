@@ -48,8 +48,8 @@ function EditForm(props: EditFormProps) {
             setItem(item);
             setName(item.name);
             setExpiryDate(item.expiryDate || null);
-            setImageURLs(item.images || []);
-            setFileURLs(item.files || []);
+            setImageURLs((item.images && Object.values(item.images)) || []);
+            setFileURLs((item.files && Object.values(item.files)) || []);
             setIsLoading(false);
         });
         return () => { itemId && itemsRef.child(itemId).off(); }
@@ -91,8 +91,8 @@ function EditForm(props: EditFormProps) {
             // Get the files selected in the form
             const fileItems = target && target.files && target.files as FileList;
             
-            const newImageUrls:string[] = [];
-            const newFileUrls:string[] = [];
+            const newImageUrls: string[] = [...imageUrls];
+            const newFileUrls: string[] = [...fileUrls];
 
             // Upload all selected files
             const uploadImagePromise = new Promise((resolve, reject) => {
