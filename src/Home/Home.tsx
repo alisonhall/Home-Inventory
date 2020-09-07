@@ -37,7 +37,7 @@ function Home(props: HomeProps) {
                     : (
                         <>
                             <h1>Locations</h1>
-                                <Fab className="add-button" color="secondary" title="Add new location" aria-label="add new location" component={Link} to="/add-location">
+                            <Fab className="add-button" color="secondary" title="Add new location" aria-label="add new location" component={Link} to="/add-location">
                                 <AddIcon fontSize="large" />
                             </Fab>
                             <ItemsList itemsList={locations} {...props} withinCard />

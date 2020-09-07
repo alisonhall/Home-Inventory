@@ -13,8 +13,8 @@ import { signIn, signOut, checkLoggedInStatus } from '../firebase';
 import Home from '../Home/Home';
 import EditForm from '../EditForm/EditForm';
 import ViewItem from '../ViewItem/ViewItem';
-import './App.scss';
 import Loader from '../Loader/Loader';
+import './App.scss';
 
 const theme = createMuiTheme({
   palette: {
@@ -26,17 +26,6 @@ const theme = createMuiTheme({
     }
   }
 });
-
-export type ItemType = {
-  id?: string | null | undefined,
-  name?: string,
-  notes?: string,
-  expiryDate?: any,
-  images?: string[],
-  files?: string[],
-  containing?: string[],
-  containedWithin?: string
-}
 
 function App() {
   const [showJSON, setShowJSON] = useState(false);
@@ -87,7 +76,7 @@ function App() {
                 </label>
                 <ToggleSwitch
                   checked={showJSON}
-                  onChange={e => setShowJSON(!showJSON)}
+                  onChange={() => setShowJSON(!showJSON)}
                   name="toggleJSON"
                   color="secondary"
                   inputProps={{ 'aria-label': 'Toggle JSON' }}

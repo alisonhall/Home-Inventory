@@ -8,7 +8,7 @@ import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/picker
 import { PhotoCamera as PhotoCameraIcon, Delete as DeleteIcon, Save as SaveIcon, FileCopy as FileCopyIcon } from '@material-ui/icons';
 
 import { itemsRef, databaseRef, locationsRef, storage } from '../firebase';
-import { ItemType as Item } from '../App/App';
+import { ItemType as Item } from '../helpers';
 import Loader from '../Loader/Loader';
 import './EditForm.scss';
 
@@ -375,7 +375,7 @@ function EditForm(props: EditFormProps) {
                                         <div className="preview-image">
                                             <img src={url} alt="" className="image" />
                                         </div>
-                                        <IconButton aria-label="delete" onClick={e => deleteImage('image', index)}>
+                                        <IconButton aria-label="delete" onClick={() => deleteImage('image', index)}>
                                             <DeleteIcon fontSize="small" />
                                         </IconButton>
                                     </div>
@@ -383,7 +383,7 @@ function EditForm(props: EditFormProps) {
                                 {fileUrls && fileUrls.map((url, index) => (
                                     <div className="file-container" key={index}>
                                         <FileCopyIcon fontSize="large" />
-                                        <IconButton aria-label="delete" onClick={e => deleteImage('file', index)}>
+                                        <IconButton aria-label="delete" onClick={() => deleteImage('file', index)}>
                                             <DeleteIcon fontSize="small" />
                                         </IconButton>
                                     </div>

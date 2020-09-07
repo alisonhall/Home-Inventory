@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Badge } from '@material-ui/core';
 
 import { itemsRef } from '../firebase';
-import { ItemType as Item } from '../App/App';
+import { ItemType as Item, addToMoveList } from '../helpers';
 import Loader from '../Loader/Loader';
 import './ItemPreview.scss';
 

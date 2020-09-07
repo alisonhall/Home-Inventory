@@ -5,7 +5,7 @@ import { Card, CardContent, Divider, Fab, IconButton, Button } from '@material-u
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, FileCopy as FileCopyIcon, ArrowBackIos as ArrowBackIosIcon } from '@material-ui/icons';
 
 import { databaseRef, itemsRef, locationsRef } from '../firebase';
-import { ItemType as Item } from '../App/App';
+import { ItemType as Item } from '../helpers';
 import ItemPreview from '../ItemPreview/ItemPreview';
 import Loader from '../Loader/Loader';
 import './ViewItem.scss';
