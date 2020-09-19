@@ -1,44 +1,103 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Home Inventory
 
-## Available Scripts
+Created by [Alison K. Hall](https://alisonkhall.com)
 
-In the project directory, you can run:
+Alison's personal version of this site: <https://sphericalweb.com>
 
-### `npm start`
+Development script: `npm start` or `netlify dev`
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+---
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+## Overview
 
-### `npm test`
+This project is meant to be forked/duplicated and then set up to be used as a personal home inventory.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Features
 
-### `npm run build`
+- Is a purely web-based application, which allows it to be used on almost any device which has a connection to the internet
+- Have multiple locations (houses, apartments, storage units, other people, etc.)
+- Can nest items within other items, with no limitation as to the nesting depth
+- Can save multiple images for each item
+- Can move items from being within one item to be within a different item instead
+- Is a Progressive Web Application (PWA), which means that when accessed from a browser on a mobile device, there is the option to install it on your device in order to run it as if it was a native application
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+## Tech stack
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- React (bootstrapped with [Create React App](https://github.com/facebook/create-react-app))
+- Typescript
+- [Firebase](https://firebase.google.com/) (free tier)
+- [Netlify](https://www.netlify.com/) (free tier)
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Setting up new personal instance of this repository
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. Fork this GitHub repository (<https://github.com/alisonhall/Home-Inventory>) and make sure that it is available on your account at <https://github.com/>.
+1. Link your new forked GitHub repository to your account on Netlify at <https://www.netlify.com/> (can be in the Free tier).
+    1. For your new site, under the Settings > Build & Deploy > Continuous Deployment section, edit the setting to make sure they have the following properties:
+        - Build command: `npm run build`
+        - Publish directory: `/build`
+1. Setup a new Firebase project (can be in the Free tier) at <https://console.firebase.google.com/>
+    1. Create a new 'Web App'
+    1. Under the 'Realtime Database' tab:
+        - Initialize the 'Realtime Database'
+        - Change the 'Rules' to be:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+            ```js
+            {
+                "rules": {
+                    ".read": "auth != null",
+                    ".write": "auth != null"
+                }
+            }
+            ```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+    1. Under the 'Storage' tab
+        - Initialize the 'Storage'
+        - Change the 'Rules' to be:
 
-## Learn More
+            ```js
+            rules_version = '1';
+            service firebase.storage {
+                match /b/{bucket}/o {
+                    match /{allPaths=**} {
+                    allow read, write: if request.auth != null;
+                    }
+                }
+            }
+            ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+    1. Under the 'Authorization' tab
+        - Go to the 'Sign-in method' section and enable the 'GitHub' option.
+            - Add GitHub authorization callback URL to your personal GitHub app configuration (see more instructions at <https://firebase.google.com/docs/auth/?authuser=0>)
+        - Under the 'Sign-in method' section, add the Netlify domain and/or your custom domain to the 'Authorized domains' list
+1. Connect Firebase to the project by using the Firebase config keys
+    1. Copy the keys shown at the bottom of the page within Firebase's Project Overview > Project Settings section
+    1. In the local `.env` file in this project:
+        - Uncomment the lines in the `.env` file and fill in the placeholder values.
+        - If you don't want to commit these config keys to your repository, then add these keys to Netlify's Environment variables. The values in the `.env` file are still needed for any local development, even if you don't commit those changes.
+    1. Netlify Environment variables
+        - Click the 'Edit variables' button under the Netlify project's Settings > Build & Deploy > Environment section.
+        - Create the environment variables with the same names as the variables within the `.env` file.
+        - Note: Local development won't be able to read the Netlify environment variables, so that is the reason why you need to make the changes in the `.env` file too, even if you don't commit those changes.
+1. Commit any changes made to the respository and push them up to your GitHub remote repository in order to trigger a build on Netlify. If you don't have any changes, you can manually trigger the build on Netlify.
+1. To see the site after the Netlify build is successful, navigate to the Netlify domain (or custom domain linked in Netlify's Custom Domains settings) that is linked with this project.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
+
+## Future Improvements
+
+- Add tagging support
+- Search items
+- Link items through a 'Related To' field
+- Returning to site after large image view
+- Open file view
+- Add additional fields
+- Allow multiple users, invitation only
+- Properly styled Alerts: <https://material-ui.com/components/snackbars/> <https://material-ui.com/components/alert/>
+- Unit tests
+- Settings view
+- Have 'Show JSON Data' be context
+- Option to remove unused images from storage
