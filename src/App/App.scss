@@ -29,30 +29,8 @@
       }
     }
 
-    .text-divider {
-      padding: 0 10px;
-    }
-
-    .toggle-switch {
-      position: relative;
-
-      label {
-        position: absolute;
-        top: -8px;
-        right: 0;
-        text-align: right;
-        font-size: smaller;
-        white-space: nowrap;
-        opacity: 0.5;
-      }
-
-      .MuiSwitch-colorSecondary.Mui-checked {
-        color: #f06292;
-
-        + .MuiSwitch-track {
-          background-color: #f06292;
-        }
-      }
+    .menu-button {
+      color: white;
     }
   }
 

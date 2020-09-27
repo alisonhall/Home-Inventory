@@ -6,8 +6,9 @@ import {
   Link
 } from 'react-router-dom';
 
-import { AppBar, Toolbar, Container, Switch as ToggleSwitch, Button } from '@material-ui/core';
+import { AppBar, Toolbar, Container, Switch as ToggleSwitch, Button, SwipeableDrawer, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { Menu as MenuIcon, AccountBox as AccountBoxIcon, ExitToApp as ExitToAppIcon } from '@material-ui/icons';
 
 import { signIn, signOut, checkLoggedInStatus, itemsRef, locationsRef } from '../firebase';
 import Home from '../Home/Home';
@@ -33,6 +34,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | undefined>();
   const [userId, setUserId] = useState<string | null>(null);
   const [moveList, setMoveList] = useState<string[]>([]);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Get the logged in status from Firebase auth
   useEffect(() => {
@@ -65,6 +67,60 @@ function App() {
     </Switch>
   );
 
+  const toggleMenu = (open: boolean) => (
+    event: React.KeyboardEvent | React.MouseEvent,
+  ) => {
+    if (
+      event &&
+      event.type === 'keydown' &&
+      ((event as React.KeyboardEvent).key === 'Tab' ||
+        (event as React.KeyboardEvent).key === 'Shift')
+    ) {
+      return;
+    }
+
+    setMenuOpen(open);
+  };
+
+  const menu = () => (
+    <div
+      role="presentation"
+      onClick={toggleMenu(false)}
+      onKeyDown={toggleMenu(false)}
+    >
+      <List>
+        {typeof isLoggedIn !== 'undefined' && isLoggedIn
+          ? (
+            <ListItem button onClick={signOut}>
+              <ListItemIcon><ExitToAppIcon /></ListItemIcon>
+              <ListItemText primary='Logout' />
+            </ListItem>
+          )
+          : (
+            <ListItem button onClick={signIn}>
+              <ListItemIcon><AccountBoxIcon /></ListItemIcon>
+              <ListItemText primary='Login' />
+            </ListItem>
+          )
+        }
+        <ListItem>
+          <div className="toggle-switch">
+            <label htmlFor="toggleJSON">
+              Show JSON Data
+                </label>
+            <ToggleSwitch
+              checked={showJSON}
+              onChange={() => setShowJSON(!showJSON)}
+              name="toggleJSON"
+              color="secondary"
+              inputProps={{ 'aria-label': 'Toggle JSON' }}
+            />
+          </div>
+        </ListItem>
+      </List>
+    </div>
+  );
+
   if (isLoading) {
     return (
       <Loader />
@@ -80,30 +136,18 @@ function App() {
               <div className="logo">
                 <Link to="/">Home Inventory</Link>
               </div>
-              <div className="toggle-switch">
-                <label htmlFor="toggleJSON">
-                  Show Data
-                </label>
-                <ToggleSwitch
-                  checked={showJSON}
-                  onChange={() => setShowJSON(!showJSON)}
-                  name="toggleJSON"
-                  color="secondary"
-                  inputProps={{ 'aria-label': 'Toggle JSON' }}
-                />
-              </div>
-              <span className="text-divider">|</span>
-              {typeof isLoggedIn !== 'undefined' && (isLoggedIn
-                ? <Button color="inherit" onClick={signOut}>Logout</Button>
-                : <Button color="inherit" onClick={signIn}>Login</Button>)}
+              <Button className="menu-button" onClick={toggleMenu(true)}><MenuIcon /></Button>
+              <SwipeableDrawer
+                anchor="right"
+                open={menuOpen}
+                onClose={toggleMenu(false)}
+                onOpen={toggleMenu(true)}
+              >
+                {menu()}
+              </SwipeableDrawer>
             </Toolbar>
           </AppBar>
-          {typeof isLoggedIn === 'undefined' && !userId && (
-            <Container className="container" maxWidth="sm">
-              <p>Invalid user ID.</p>
-            </Container>
-          )}
-          {typeof isLoggedIn === 'undefined' && userId && <Loader />}
+          {typeof isLoggedIn === 'undefined' && <Loader />}
           {typeof isLoggedIn !== 'undefined' && userId && itemsRef && locationsRef && isLoggedIn
             ? routes
             : (
