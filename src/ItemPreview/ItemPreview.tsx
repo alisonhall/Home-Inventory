@@ -12,6 +12,7 @@ import './ItemPreview.scss';
 type ItemPreviewProps = {
     itemId: string,
     showJSON: boolean,
+    userId: string | null,
     moveList: string[],
     setMoveList: Dispatch<SetStateAction<string[]>>
 }
@@ -25,14 +26,14 @@ function ItemPreview(props: ItemPreviewProps) {
 
     // Get the specified item details from Firebase
     useEffect(() => {
-        itemId && itemsRef.child(itemId).on('value', (snapshot) => {
+        itemId && itemsRef && itemsRef.child(itemId).on('value', (snapshot) => {
             let item = snapshot.val();
             setItem(item);
             const numberOfItemsWithin = item && item.containing && Object.keys(item.containing).length;
             setNumItemsWithin(numberOfItemsWithin || null);
             setIsLoading(false);
         });
-        return () => { itemId && itemsRef.child(itemId).off(); }
+        return () => { itemId && itemsRef && itemsRef.child(itemId).off(); }
     }, [itemId]);
 
     // Don't render anything if the item is not found

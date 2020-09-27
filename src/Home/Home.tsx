@@ -11,6 +11,7 @@ import Loader from '../Loader/Loader';
 
 type HomeProps = {
     showJSON: boolean,
+    userId: string | null,
     moveList: string[],
     setMoveList: Dispatch<SetStateAction<string[]>>
 }
@@ -21,13 +22,13 @@ function Home(props: HomeProps) {
 
     // Get the list of location IDs
     useEffect(() => {
-        locationsRef.on('value', (snapshot) => {
+        locationsRef && locationsRef.on('value', (snapshot) => {
             let items = snapshot.val();
             const locationIds: string[] = items && Object.values(items);
             setLocations(locationIds);
             setIsLoading(false);
         });
-        return () => { locationsRef.off(); }
+        return () => { locationsRef && locationsRef.off(); }
     }, []);
 
     return (

@@ -9,12 +9,13 @@ type ItemsListProps = {
     itemsList: string[],
     withinCard: boolean,
     showJSON: boolean,
+    userId: string | null,
     moveList: string[],
     setMoveList: Dispatch<SetStateAction<string[]>>
 }
 
 function ItemsList(props: ItemsListProps) {
-    const { itemsList, withinCard = false, moveList, setMoveList, showJSON } = props;
+    const { itemsList, withinCard = false, moveList, setMoveList, showJSON, ...additionalProps } = props;
 
     // Don't render anything if there is no list of items, or there are no items within the list
     if (!itemsList || !itemsList.length) {
@@ -25,7 +26,7 @@ function ItemsList(props: ItemsListProps) {
     const content = itemsList && itemsList.map((itemId: string, i: number) => {
         return (
             <React.Fragment key={i}>
-                <ItemPreview itemId={itemId} showJSON={showJSON} moveList={moveList} setMoveList={setMoveList} />
+                <ItemPreview itemId={itemId} showJSON={showJSON} moveList={moveList} setMoveList={setMoveList} {...additionalProps} />
                 {i < itemsList.length - 1 && <Divider />}
             </React.Fragment>
         );
@@ -43,7 +44,7 @@ function ItemsList(props: ItemsListProps) {
     // Return within a card if not already within a card
     return (
         <>
-            <MoveList moveList={moveList} setMoveList={setMoveList} showJSON={showJSON} />
+            <MoveList moveList={moveList} setMoveList={setMoveList} showJSON={showJSON} {...additionalProps} />
             <Container className="container" maxWidth="sm">
                 <Card>
                     <CardContent>

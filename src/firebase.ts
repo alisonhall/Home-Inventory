@@ -28,6 +28,7 @@ firebase.initializeApp(config);
 
 export const provider = new firebase.auth.GithubAuthProvider();
 export const signIn = () => firebase.auth().signInWithRedirect(provider);
+let uid = '';
 firebase.auth().getRedirectResult().then(function (result) {
     console.info('User successfully signed in');
 }).catch(function (error) {
@@ -37,29 +38,35 @@ firebase.auth().getRedirectResult().then(function (result) {
 export const signOut = () => (
     firebase.auth().signOut().then(function () {
         console.info('User successfully signed out');
+        uid = '';
     }).catch(function (error) {
         console.error('Logout error', error);
     })
 );
 
-export const checkLoggedInStatus = (setIsLoggedIn: Dispatch<SetStateAction<boolean | undefined>>) => {
+export const checkLoggedInStatus = (setIsLoggedIn: Dispatch<SetStateAction<boolean | undefined>>, setUserId: Dispatch<SetStateAction<string | null>>) => {
     firebase.auth().onAuthStateChanged(function (user) {
-        if (user) {
+        if (user && user.uid) {
+            uid = user.uid;
+            setUserId(uid);
+            locationsRef = databaseRef.child(uid).child("locations");
+            itemsRef = databaseRef.child(uid).child("items");
             setIsLoggedIn(true);
         } else {
+            setUserId(null);
             setIsLoggedIn(false);
         }
     });
 };
 
-export const storage = firebase.storage()
+export const storage = firebase.storage();
 export const db = firebase.database();
 export const databaseRef = firebase.database().ref();
-export const locationsRef = databaseRef.child("locations")
-export const itemsRef = databaseRef.child("items")
+export let locationsRef = uid !== '' && databaseRef.child(uid).child("locations");
+export let itemsRef = uid !== '' && databaseRef.child(uid).child("items");
 
 export const getItemDataOnce = (itemId: string) => {
-    return db.ref(`/items/${itemId}`).once('value').then(function (snapshot) {
+    return db.ref(`/${uid}/items/${itemId}`).once('value').then(function (snapshot) {
         const item = snapshot.val();
         return item;
     });

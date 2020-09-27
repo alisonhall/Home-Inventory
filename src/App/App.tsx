@@ -9,7 +9,7 @@ import {
 import { AppBar, Toolbar, Container, Switch as ToggleSwitch, Button } from '@material-ui/core';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
-import { signIn, signOut, checkLoggedInStatus } from '../firebase';
+import { signIn, signOut, checkLoggedInStatus, itemsRef, locationsRef } from '../firebase';
 import Home from '../Home/Home';
 import EditForm from '../EditForm/EditForm';
 import ViewItem from '../ViewItem/ViewItem';
@@ -28,17 +28,21 @@ const theme = createMuiTheme({
 });
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
   const [showJSON, setShowJSON] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | undefined>();
+  const [userId, setUserId] = useState<string | null>(null);
   const [moveList, setMoveList] = useState<string[]>([]);
 
   // Get the logged in status from Firebase auth
   useEffect(() => {
-    checkLoggedInStatus(setIsLoggedIn);
+    checkLoggedInStatus(setIsLoggedIn, setUserId);
+    setIsLoading(false);
   }, []);
 
   const defaultProps = {
-    showJSON
+    showJSON,
+    userId
   };
 
   const routes = (
@@ -60,6 +64,12 @@ function App() {
       </Route>
     </Switch>
   );
+
+  if (isLoading) {
+    return (
+      <Loader />
+    )
+  }
 
   return (
     <Router>
@@ -86,16 +96,23 @@ function App() {
               {typeof isLoggedIn !== 'undefined' && (isLoggedIn
                 ? <Button color="inherit" onClick={signOut}>Logout</Button>
                 : <Button color="inherit" onClick={signIn}>Login</Button>)}
+              <span className="text-divider">|</span>
+              <span>{userId}</span>
             </Toolbar>
           </AppBar>
-          {typeof isLoggedIn === 'undefined' && <Loader />}
-          {typeof isLoggedIn !== 'undefined' && (isLoggedIn
+          {typeof isLoggedIn === 'undefined' && !userId && (
+            <Container className="container" maxWidth="sm">
+              <p>Invalid user ID.</p>
+            </Container>
+          )}
+          {typeof isLoggedIn === 'undefined' && userId && <Loader />}
+          {typeof isLoggedIn !== 'undefined' && userId && itemsRef && locationsRef && isLoggedIn
             ? routes
             : (
               <Container className="container" maxWidth="sm">
                 <p>You must login to use this app.</p>
               </Container>
-            ))}
+            )}
         </div>
       </ThemeProvider>
     </Router>

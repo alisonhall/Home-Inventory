@@ -16,13 +16,14 @@ type ParamsType = {
 
 type MoveListProps = {
     showJSON: boolean,
+    userId: string | null,
     moveList: string[],
     setMoveList: Dispatch<SetStateAction<string[]>>
 }
 
 function MoveList(props: MoveListProps) {
     let { itemId, parentId }: ParamsType = useParams();
-    const { moveList, setMoveList, showJSON, ...additionalProps } = props;
+    const { moveList, setMoveList, showJSON, userId, ...additionalProps } = props;
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -56,7 +57,7 @@ function MoveList(props: MoveListProps) {
 
             const updates: any = {};
             // Update the current data of items within to include the new items from the move list
-            updates[`/items/${itemId}/containing`] = [...currentContaining, ...moveList];
+            updates[`/${userId}/items/${itemId}/containing`] = [...currentContaining, ...moveList];
 
             const promises: any = [];
             const errors: string[] = [];
@@ -68,7 +69,7 @@ function MoveList(props: MoveListProps) {
 
                     if (typeof moveItemId === 'string') {
                         // Update the moved item with it's new parent ID
-                        updates[`/items/${moveItemId}/containedWithin`] = itemId;
+                        updates[`/${userId}/items/${moveItemId}/containedWithin`] = itemId;
     
                         const moveItemParentId = item.containedWithin;
 
@@ -79,14 +80,14 @@ function MoveList(props: MoveListProps) {
                                     // The move item parent's array of containing items
                                     let parentContainingIds = parentItem && parentItem.containing && Object.values(parentItem.containing);
                                     // The index that the move item is at within the move item parent's containing items array
-                                    let updatedContainingItems = updates[`/items/${parentItem.id}/containing`] || parentContainingIds;
+                                    let updatedContainingItems = updates[`/${userId}/items/${parentItem.id}/containing`] || parentContainingIds;
                                     const itemIndexInParent = updatedContainingItems && updatedContainingItems.indexOf(moveItemId);
 
                                     if (typeof itemIndexInParent === 'number' && itemIndexInParent >= 0) {
                                         // Remove the move item from the move item parent's containing items array
                                         updatedContainingItems.splice(itemIndexInParent, 1);
                                         // Update the move item parent's containing items array to not include the move item
-                                        updates[`/items/${parentItem.id}/containing`] = updatedContainingItems;
+                                        updates[`/${userId}/items/${parentItem.id}/containing`] = updatedContainingItems;
                                     } else {
                                         errors.push('ERROR: Move item not found in parent');
                                         console.error('ERROR: Move item not found in parent', { item, parentItem, parentContainingIds, updatedContainingItems, itemIndexInParent, moveItemId });

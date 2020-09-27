@@ -22,12 +22,12 @@ function ItemThumbnail(props: ItemThumbnailProps) {
 
     // Get the specified item details from Firebase
     useEffect(() => {
-        itemId && itemsRef.child(itemId).on('value', (snapshot) => {
+        itemId && itemsRef && itemsRef.child(itemId).on('value', (snapshot) => {
             let item = snapshot.val();
             setItem(item);
             setIsLoading(false);
         });
-        return () => { itemId && itemsRef.child(itemId).off(); }
+        return () => { itemId && itemsRef && itemsRef.child(itemId).off(); }
     }, [itemId]);
 
     // Don't render anything if the item is not found

@@ -24,12 +24,13 @@ type ParamsType = {
 }
 
 type EditFormProps = {
-    showJSON: boolean
+    showJSON: boolean,
+    userId: string | null
 }
 
 function EditForm(props: EditFormProps) {
     let { itemId, parentId }: ParamsType = useParams();
-    const { showJSON } = props;
+    const { showJSON, userId } = props;
 
     const [isLoading, setIsLoading] = useState(true);
     const [item, setItem] = useState<Item | undefined>(undefined);
@@ -43,7 +44,7 @@ function EditForm(props: EditFormProps) {
 
     // Get the specified item from the URL param for when editing that item
     useEffect(() => {
-        itemId && itemsRef.child(itemId).on('value', (snapshot) => {
+        itemId && itemsRef && itemsRef.child(itemId).on('value', (snapshot) => {
             let item = snapshot.val();
             setItem(item);
             setName(item.name);
@@ -52,25 +53,25 @@ function EditForm(props: EditFormProps) {
             setFileURLs((item.files && Object.values(item.files)) || []);
             setIsLoading(false);
         });
-        return () => { itemId && itemsRef.child(itemId).off(); }
+        return () => { itemId && itemsRef && itemsRef.child(itemId).off(); }
     }, [itemId]);
     // Get the details of the parent item for when creating a new item within the parent item
     useEffect(() => {
-        parentId && itemsRef.child(parentId).on('value', (snapshot) => {
+        parentId && itemsRef && itemsRef.child(parentId).on('value', (snapshot) => {
             let item = snapshot.val();
             setParentItem(item);
             setIsLoading(false);
         });
-        return () => { parentId && itemsRef.child(parentId).off(); }
+        return () => { parentId && itemsRef && itemsRef.child(parentId).off(); }
     }, [parentId]);
     // Get the list of location IDs for when creating a new location item
     useEffect(() => {
-        locationsRef.on('value', (snapshot) => {
+        locationsRef && locationsRef.on('value', (snapshot) => {
             let item = snapshot.val();
             setLocationIds(Object.values(item));
             setIsLoading(false);
         });
-        return () => { locationsRef.off(); }
+        return () => { locationsRef && locationsRef.off(); }
     }, []);
 
     let history = useHistory();
@@ -202,7 +203,7 @@ function EditForm(props: EditFormProps) {
 
             if (itemId) {
                 // Editing an item
-                updates[`/items/${itemKey}`] = updatedItem;
+                updates[`/${userId}/items/${itemKey}`] = updatedItem;
 
                 console.warn('Editing item', { itemKey, updates });
 
@@ -216,22 +217,22 @@ function EditForm(props: EditFormProps) {
             } else if (parentId) {
                 // Creating a new item
                 // Get new item key
-                itemKey = itemsRef.push().key;
+                itemKey = (itemsRef && itemsRef.push().key) || null;
 
                 // Set which item the new item is within
                 updatedItem[`containedWithin`] = parentId;
                 updatedItem[`id`] = itemKey;
 
                 // Add the new item to the Firebase items reference
-                updates[`/items/${itemKey}`] = updatedItem;
+                updates[`/${userId}/items/${itemKey}`] = updatedItem;
 
                 // Add the new item key to the list of the parent item's containing items
                 if (parentItem && !parentItem.containing) {
-                    updates[`/items/${parentId}`] = {...parentItem, containing: [ itemKey ]}
+                    updates[`/${userId}/items/${parentId}`] = {...parentItem, containing: [ itemKey ]}
                 } else if (parentItem && parentItem.containing) {
                     const containingItemIds: string[] = Object.values(parentItem.containing) || [];
                     itemKey && containingItemIds.push(itemKey);
-                    updates[`/items/${parentId}/containing`] = containingItemIds;
+                    updates[`/${userId}/items/${parentId}/containing`] = containingItemIds;
                 }
 
                 console.warn('Creating a new item', { itemKey, updates });
@@ -246,12 +247,12 @@ function EditForm(props: EditFormProps) {
             } else {
                 // Creating a new location
                 // Get new item key
-                itemKey = itemsRef.push().key;
+                itemKey = (itemsRef && itemsRef.push().key) || null;
 
                 // Add the new item to the items reference, add the new item key to the list of location ids
                 updatedItem[`id`] = itemKey;
-                updates[`/items/${itemKey}`] = updatedItem;
-                updates[`/locations`] = [...locationIds, itemKey];
+                updates[`/${userId}/items/${itemKey}`] = updatedItem;
+                updates[`/${userId}/locations`] = [...locationIds, itemKey];
 
                 console.warn('Creating a new location', { itemKey, updates });
 

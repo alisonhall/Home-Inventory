@@ -17,13 +17,14 @@ type ParamsType = {
 
 type ViewItemProps = {
     showJSON: boolean,
+    userId: string | null,
     moveList: string[],
     setMoveList: Dispatch<SetStateAction<string[]>>
 }
 
 function ViewItem(props: ViewItemProps) {
     let { itemId }: ParamsType = useParams();
-    const { showJSON, moveList, setMoveList } = props;
+    const { showJSON, userId, moveList, setMoveList } = props;
 
     const [isLoading, setIsLoading] = useState(true);
     const [item, setItem] = useState<Item | null>(null);
@@ -33,7 +34,7 @@ function ViewItem(props: ViewItemProps) {
 
     // Get the specified item details from Firebase, as well as the IDs of the items within the specified item
     useEffect(() => {
-        itemId && itemsRef.child(itemId).on('value', (snapshot) => {
+        itemId && itemsRef && itemsRef.child(itemId).on('value', (snapshot) => {
             let item = snapshot.val();
             setItem({ ...item, id: itemId });
 
@@ -42,26 +43,26 @@ function ViewItem(props: ViewItemProps) {
             setContainingItemIds(childIds);
             setIsLoading(false);
         });
-        return () => { itemId && itemsRef.child(itemId).off(); }
+        return () => { itemId && itemsRef && itemsRef.child(itemId).off(); }
     }, [itemId]);
     // Get the details of the parent item
     useEffect(() => {
-        item && item.containedWithin && itemsRef.child(item.containedWithin).on('value', (snapshot) => {
+        item && item.containedWithin && itemsRef && itemsRef.child(item.containedWithin).on('value', (snapshot) => {
             let containingItem = snapshot.val();
             setWithinItem({ ...containingItem, id: item.containedWithin });
         });
         if (!item || !item.containedWithin) {
             setWithinItem(null);
         }
-        return () => { item && item.containedWithin && itemsRef.child(item.containedWithin).off(); }
+        return () => { item && item.containedWithin && itemsRef && itemsRef.child(item.containedWithin).off(); }
     }, [item]);
     // Get the list of location IDs
     useEffect(() => {
-        locationsRef.on('value', (snapshot) => {
+        locationsRef && locationsRef.on('value', (snapshot) => {
             let item = snapshot.val();
             setLocationIds(Object.values(item));
         });
-        return () => { locationsRef.off(); }
+        return () => { locationsRef && locationsRef.off(); }
     }, []);
 
     let history = useHistory();
@@ -100,9 +101,9 @@ function ViewItem(props: ViewItemProps) {
 
                         const updates: any = {};
                         // Update the parent item with the updated data
-                        updates[`/items/${withinItem && withinItem.id}`] = updatedParentItem;
+                        updates[`/${userId}/items/${withinItem && withinItem.id}`] = updatedParentItem;
                         // Remove the item
-                        updates[`/items/${itemId}`] = null;
+                        updates[`/${userId}/items/${itemId}`] = null;
 
                         console.warn('Removing item', { updates });
 
@@ -132,9 +133,9 @@ function ViewItem(props: ViewItemProps) {
 
                         const updates: any = {};
                         // Update the locations array to use the updated list of location ids
-                        updates[`/locations`] = [...updatedLocations];
+                        updates[`/${userId}/locations`] = [...updatedLocations];
                         // Remove the item
-                        updates[`/items/${itemId}`] = null;
+                        updates[`/${userId}/items/${itemId}`] = null;
 
                         console.warn('Removing location', { updates });
 
@@ -162,7 +163,7 @@ function ViewItem(props: ViewItemProps) {
 
     return (
         <>
-            <MoveList moveList={moveList} setMoveList={setMoveList} showJSON={showJSON} />
+            <MoveList moveList={moveList} setMoveList={setMoveList} showJSON={showJSON} userId={userId} />
             <Container className="container" maxWidth="sm">
                 <div className="view-item">
                     <Card className="view-item-content">
