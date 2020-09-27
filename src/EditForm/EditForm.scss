@@ -1,4 +1,8 @@
 .edit-form {
+    h3 {
+        margin-bottom: 0;
+    }
+
     .input.upload {
         display: none;
     }
@@ -14,6 +18,10 @@
     .upload-button {
         margin-top: 10px;
         margin-bottom: 20px;
+    }
+
+    .uploaded {
+        width: 100%;
     }
 
     .image-container,

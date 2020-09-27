@@ -200,12 +200,12 @@ function ViewItem(props: ViewItemProps) {
                                                     <AddIcon fontSize="large" />
                                                 </Link>
                                             </Fab>
-                                            <IconButton title="Edit item" color="primary">
+                                            <IconButton title="Edit item" color="primary" className="edit-button">
                                                 <Link className="link-icon" aria-label="edit item" to={`/edit/${item.id}`}>
                                                     <EditIcon fontSize="large" />
                                                 </Link>
                                             </IconButton>
-                                            <IconButton title="Delete item" aria-label="delete item" color="primary" onClick={deleteItem}>
+                                            <IconButton title="Delete item" aria-label="delete item" className="delete-button" color="primary" onClick={deleteItem}>
                                                 <DeleteIcon fontSize="large" />
                                             </IconButton>
                                         </div>

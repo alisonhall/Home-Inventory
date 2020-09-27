@@ -96,8 +96,6 @@ function App() {
               {typeof isLoggedIn !== 'undefined' && (isLoggedIn
                 ? <Button color="inherit" onClick={signOut}>Logout</Button>
                 : <Button color="inherit" onClick={signIn}>Login</Button>)}
-              <span className="text-divider">|</span>
-              <span>{userId}</span>
             </Toolbar>
           </AppBar>
           {typeof isLoggedIn === 'undefined' && !userId && (

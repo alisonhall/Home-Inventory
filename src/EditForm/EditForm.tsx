@@ -41,6 +41,7 @@ function EditForm(props: EditFormProps) {
     const [expiryDate, setExpiryDate] = useState<any>(null);
     const [imageUrls, setImageURLs] = useState<string[]>([]);
     const [fileUrls, setFileURLs] = useState<string[]>([]);
+    const [buttonDisabled, setButtonDisabled] = useState(false);
 
     // Get the specified item from the URL param for when editing that item
     useEffect(() => {
@@ -87,6 +88,7 @@ function EditForm(props: EditFormProps) {
     function handleImageUpload(e: React.FormEvent<EventTarget>) {
         try {
             e.preventDefault();
+            setButtonDisabled(true);
 
             const target = e.target as HTMLInputElement;
             // Get the files selected in the form
@@ -174,6 +176,7 @@ function EditForm(props: EditFormProps) {
             uploadImagePromise.then(result => {
                 setImageURLs(newImageUrls || []);
                 setFileURLs(newFileUrls || []);
+                setButtonDisabled(false);
                 console.warn('Upload complete', { result, newImageUrls, newFileUrls });
             }, function (error) {
                 console.error('ERROR:', error);
@@ -303,6 +306,20 @@ function EditForm(props: EditFormProps) {
                                     <h3>{actionType}</h3>
                                     {showJSON && item && (<pre><code>{JSON.stringify(item, null, 2)}</code></pre>)}
                                     <form onSubmit={saveItem}>
+                                        <Button
+                                            className="save-button"
+                                            variant="contained"
+                                            color="secondary"
+                                            startIcon={<SaveIcon />}
+                                            onClick={saveItem}
+                                            disabled={buttonDisabled}
+                                        >
+                                            Save
+                                        </Button>
+                                        <Button className="cancel-button" variant="outlined" component={Link} to={itemId ? `/view/${itemId}` : (parentId ? `/view/${parentId}` : `/`)}>
+                                            Cancel
+                                        </Button>
+                                        <Divider />
                                         <TextField
                                             style={{ width: "100%" }}
                                             id="name"
@@ -312,6 +329,47 @@ function EditForm(props: EditFormProps) {
                                             label="Name"
                                             variant="outlined"
                                         />
+                                        <input
+                                            type="file"
+                                            id="upload"
+                                            className="input upload"
+                                            onChange={(e) => handleImageUpload(e)}
+                                            capture="environment"
+                                            accept="image/*,.pdf"
+                                        />
+                                        <label htmlFor="upload" className="upload-button">
+                                            <Button
+                                                className="upload-button"
+                                                variant="contained"
+                                                color="primary"
+                                                size="small"
+                                                component="span"
+                                                startIcon={<PhotoCameraIcon />}
+                                            >
+                                                Upload image or file
+                                            </Button>
+                                        </label>
+                                        <div className="uploaded">
+                                            {imageUrls && imageUrls.map((url, index) => (
+                                                <div className="image-container" key={index}>
+                                                    <div className="preview-image">
+                                                        <img src={url} alt="" className="image" />
+                                                    </div>
+                                                    <IconButton aria-label="delete" onClick={() => deleteImage('image', index)}>
+                                                        <DeleteIcon fontSize="small" />
+                                                    </IconButton>
+                                                </div>
+                                            ))}
+                                            {fileUrls && fileUrls.map((url, index) => (
+                                                <div className="file-container" key={index}>
+                                                    <FileCopyIcon fontSize="large" />
+                                                    <IconButton aria-label="delete" onClick={() => deleteImage('file', index)}>
+                                                        <DeleteIcon fontSize="small" />
+                                                    </IconButton>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <Divider />
                                         <TextField
                                             style={{ width: "100%" }}
                                             id="notes"
@@ -336,60 +394,7 @@ function EditForm(props: EditFormProps) {
                                             onChange={setExpiryDate}
                                             InputAdornmentProps={{ position: "end" }}
                                         />
-                                        <input
-                                            type="file"
-                                            id="upload"
-                                            className="input upload"
-                                            onChange={(e) => handleImageUpload(e)}
-                                            capture="environment"
-                                            accept="image/*,.pdf"
-                                        />
-                                        <label htmlFor="upload" className="upload-button">
-                                            <Button
-                                                className="upload-button"
-                                                variant="contained"
-                                                color="primary"
-                                                size="small"
-                                                component="span"
-                                                startIcon={<PhotoCameraIcon />}
-                                            >
-                                                Upload image or file
-                                            </Button>
-                                        </label>
-                                        <Divider />
-                                        <Button
-                                            className="save-button"
-                                            variant="contained"
-                                            color="secondary"
-                                            startIcon={<SaveIcon />}
-                                            onClick={saveItem}
-                                        >
-                                            Save
-                                        </Button>
-                                        <Button className="cancel-button" variant="outlined" component={Link} to={itemId ? `/view/${itemId}` : (parentId ? `/view/${parentId}` : `/`)}>
-                                            Cancel
-                                        </Button>
                                     </form>
-                                    <Divider />
-
-                                    {imageUrls && imageUrls.map((url, index) => (
-                                        <div className="image-container" key={index}>
-                                            <div className="preview-image">
-                                                <img src={url} alt="" className="image" />
-                                            </div>
-                                            <IconButton aria-label="delete" onClick={() => deleteImage('image', index)}>
-                                                <DeleteIcon fontSize="small" />
-                                            </IconButton>
-                                        </div>
-                                    ))}
-                                    {fileUrls && fileUrls.map((url, index) => (
-                                        <div className="file-container" key={index}>
-                                            <FileCopyIcon fontSize="large" />
-                                            <IconButton aria-label="delete" onClick={() => deleteImage('file', index)}>
-                                                <DeleteIcon fontSize="small" />
-                                            </IconButton>
-                                        </div>
-                                    ))}
                                 </>
                             </MuiPickersUtilsProvider>
                         )}
