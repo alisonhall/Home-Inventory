@@ -136,6 +136,19 @@ function App() {
               <div className="logo">
                 <Link to="/">Home Inventory</Link>
               </div>
+              {/* <div className="search">
+                <div className="search-icon">
+                  <SearchIcon />
+                </div>
+                <InputBase
+                  placeholder="Search…"
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                  }}
+                  inputProps={{ 'aria-label': 'search' }}
+                />
+              </div> */}
               <Button className="menu-button" onClick={toggleMenu(true)}><MenuIcon /></Button>
               <SwipeableDrawer
                 anchor="right"
@@ -153,6 +166,7 @@ function App() {
             : (
               <Container className="container" maxWidth="sm">
                 <p>You must login to use this app.</p>
+                <Button className="login-button" onClick={signIn}>Login</Button>
               </Container>
             )}
         </div>
