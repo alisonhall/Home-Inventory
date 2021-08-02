@@ -4,7 +4,7 @@ import { Button } from '@material-ui/core';
 import { RemoveCircleOutline as RemoveCircleOutlineIcon } from '@material-ui/icons';
 
 import { itemsRef } from '../../utils/firebase';
-import { ItemType as Item, removeFromMoveList } from '../../utils/helpers';
+import { removeFromMoveList } from '../../utils/helpers';
 import Loader from '../Loader/Loader';
 import './ItemThumbnail.scss';
 
@@ -18,7 +18,7 @@ function ItemThumbnail(props: ItemThumbnailProps) {
     const { itemId, moveList, setMoveList } = props;
 
     const [isLoading, setIsLoading] = useState(true);
-    const [item, setItem] = useState<Item | null>(null);
+    const [item, setItem] = useState<ItemType | null>(null);
 
     // Get the specified item details from Firebase
     useEffect(() => {

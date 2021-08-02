@@ -8,7 +8,6 @@ import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/picker
 import { PhotoCamera as PhotoCameraIcon, Delete as DeleteIcon, Save as SaveIcon, FileCopy as FileCopyIcon } from '@material-ui/icons';
 
 import { itemsRef, databaseRef, locationsRef, storage } from '../../utils/firebase';
-import { ItemType as Item } from '../../utils/helpers';
 import Loader from '../../components/Loader/Loader';
 import './EditForm.scss';
 
@@ -33,8 +32,8 @@ function EditForm(props: EditFormProps) {
     const { showJSON, userId } = props;
 
     const [isLoading, setIsLoading] = useState(true);
-    const [item, setItem] = useState<Item | undefined>(undefined);
-    const [parentItem, setParentItem] = useState<Item | undefined>(undefined);
+    const [item, setItem] = useState<ItemType | undefined>(undefined);
+    const [parentItem, setParentItem] = useState<ItemType | undefined>(undefined);
     const [locationIds, setLocationIds] = useState<string[]>([]);
     const [name, setName] = useState("");
     const [notes, setNotes] = useState("");

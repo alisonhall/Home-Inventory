@@ -5,7 +5,6 @@ import { Container, Card, CardContent, Divider, Fab, IconButton, Button } from '
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, FileCopy as FileCopyIcon, ArrowBackIos as ArrowBackIosIcon } from '@material-ui/icons';
 
 import { databaseRef, itemsRef, locationsRef } from '../../utils/firebase';
-import { ItemType as Item } from '../../utils/helpers';
 import MoveList from '../MoveList/MoveList';
 import ItemPreview from '../ItemPreview/ItemPreview';
 import Loader from '../Loader/Loader';
@@ -27,9 +26,9 @@ function ViewItem(props: ViewItemProps) {
     const { showJSON, userId, moveList, setMoveList } = props;
 
     const [isLoading, setIsLoading] = useState(true);
-    const [item, setItem] = useState<Item | null>(null);
+    const [item, setItem] = useState<ItemType | null>(null);
     const [containingItemIds, setContainingItemIds] = useState<string[]>([]);
-    const [withinItem, setWithinItem] = useState<Item | null>(null);
+    const [withinItem, setWithinItem] = useState<ItemType | null>(null);
     const [locationIds, setLocationIds] = useState<string[]>([]);
 
     // Get the specified item details from Firebase, as well as the IDs of the items within the specified item

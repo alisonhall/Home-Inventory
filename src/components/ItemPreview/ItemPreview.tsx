@@ -5,7 +5,7 @@ import { Badge, IconButton } from '@material-ui/core';
 import { AddCircleOutline as AddCircleOutlineIcon } from '@material-ui/icons';
 
 import { itemsRef } from '../../utils/firebase';
-import { ItemType as Item, addToMoveList } from '../../utils/helpers';
+import { addToMoveList } from '../../utils/helpers';
 import Loader from '../Loader/Loader';
 import './ItemPreview.scss';
 
@@ -21,7 +21,7 @@ function ItemPreview(props: ItemPreviewProps) {
     const { itemId, showJSON, moveList, setMoveList } = props;
 
     const [isLoading, setIsLoading] = useState(true);
-    const [item, setItem] = useState<Item | null>(null);
+    const [item, setItem] = useState<ItemType | null>(null);
     const [numItemsWithin, setNumItemsWithin] = useState<number | null>(null);
 
     // Get the specified item details from Firebase
