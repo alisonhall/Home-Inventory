@@ -4,8 +4,8 @@ import { Link, useParams, useHistory } from 'react-router-dom';
 import { Container, Card, CardContent, Divider, Fab, IconButton, Button } from '@material-ui/core';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, FileCopy as FileCopyIcon, ArrowBackIos as ArrowBackIosIcon } from '@material-ui/icons';
 
-import { databaseRef, itemsRef, locationsRef } from '../firebase';
-import { ItemType as Item } from '../helpers';
+import { databaseRef, itemsRef, locationsRef } from '../../utils/firebase';
+import { ItemType as Item } from '../../utils/helpers';
 import MoveList from '../MoveList/MoveList';
 import ItemPreview from '../ItemPreview/ItemPreview';
 import Loader from '../Loader/Loader';

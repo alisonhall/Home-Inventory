@@ -4,7 +4,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import { IconButton } from '@material-ui/core';
 import { MoveToInbox as MoveToInboxIcon } from '@material-ui/icons';
 
-import { getItemDataOnce, databaseRef } from '../firebase';
+import { getItemDataOnce, databaseRef } from '../../utils/firebase';
 import ItemThumbnail from '../ItemThumbnail/ItemThumbnail';
 import './MoveList.scss';
 import Loader from '../Loader/Loader';

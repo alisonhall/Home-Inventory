@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 import { Container, Card, CardContent, Fab } from '@material-ui/core';
 import { Add as AddIcon } from '@material-ui/icons';
 
-import { locationsRef } from '../firebase';
-import MoveList from '../MoveList/MoveList';
+import { locationsRef } from '../../utils/firebase';
+import MoveList from '../../components/MoveList/MoveList';
 import ItemsList from '../ItemsList/ItemsList';
-import Loader from '../Loader/Loader';
+import Loader from '../../components/Loader/Loader';
 
 type HomeProps = {
     showJSON: boolean,

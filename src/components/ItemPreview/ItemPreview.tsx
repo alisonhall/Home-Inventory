@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 import { Badge, IconButton } from '@material-ui/core';
 import { AddCircleOutline as AddCircleOutlineIcon } from '@material-ui/icons';
 
-import { itemsRef } from '../firebase';
-import { ItemType as Item, addToMoveList } from '../helpers';
+import { itemsRef } from '../../utils/firebase';
+import { ItemType as Item, addToMoveList } from '../../utils/helpers';
 import Loader from '../Loader/Loader';
 import './ItemPreview.scss';
 

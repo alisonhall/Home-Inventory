@@ -3,8 +3,8 @@ import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { Button } from '@material-ui/core';
 import { RemoveCircleOutline as RemoveCircleOutlineIcon } from '@material-ui/icons';
 
-import { itemsRef } from '../firebase';
-import { ItemType as Item, removeFromMoveList } from '../helpers';
+import { itemsRef } from '../../utils/firebase';
+import { ItemType as Item, removeFromMoveList } from '../../utils/helpers';
 import Loader from '../Loader/Loader';
 import './ItemThumbnail.scss';
 

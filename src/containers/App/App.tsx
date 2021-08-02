@@ -10,11 +10,11 @@ import { AppBar, Toolbar, Container, Switch as ToggleSwitch, Button, SwipeableDr
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { Menu as MenuIcon, AccountBox as AccountBoxIcon, ExitToApp as ExitToAppIcon } from '@material-ui/icons';
 
-import { signIn, signOut, checkLoggedInStatus, itemsRef, locationsRef } from '../firebase';
+import { signIn, signOut, checkLoggedInStatus, itemsRef, locationsRef } from '../../utils/firebase';
 import Home from '../Home/Home';
 import EditForm from '../EditForm/EditForm';
-import ViewItem from '../ViewItem/ViewItem';
-import Loader from '../Loader/Loader';
+import ViewItem from '../../components/ViewItem/ViewItem';
+import Loader from '../../components/Loader/Loader';
 import './App.scss';
 
 const theme = createMuiTheme({

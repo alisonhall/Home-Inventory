@@ -2,8 +2,8 @@ import React, { Dispatch, SetStateAction } from 'react';
 
 import { Container, Card, CardContent, Divider } from '@material-ui/core';
 
-import MoveList from '../MoveList/MoveList';
-import ItemPreview from '../ItemPreview/ItemPreview';
+import MoveList from '../../components/MoveList/MoveList';
+import ItemPreview from '../../components/ItemPreview/ItemPreview';
 
 type ItemsListProps = {
     itemsList: string[],
