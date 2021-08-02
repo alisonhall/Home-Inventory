@@ -27,7 +27,7 @@ function ViewItem(props: ViewItemProps) {
 
     const [isLoading, setIsLoading] = useState(true);
     const [item, setItem] = useState<ItemType | null>(null);
-    const [containingItemIds, setContainingItemIds] = useState<string[]>([]);
+    const [containingItemIds, setContainingItemIds] = useState<string[] | undefined>([]);
     const [withinItem, setWithinItem] = useState<ItemType | null>(null);
     const [locationIds, setLocationIds] = useState<string[]>([]);
 
