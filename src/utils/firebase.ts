@@ -72,4 +72,21 @@ export const getItemDataOnce = (itemId: string) => {
     });
 }
 
+export const logUserStorageFileUrls = () => {
+    const fileUrls: string[] = [];
+
+    storage
+        .ref("images")
+        .listAll()
+        .then((res) => {
+            res.items?.forEach((itemRef) => {
+                itemRef.getDownloadURL().then((url) => {
+                    fileUrls.push(url);
+                });
+            });
+        }).then(() => {
+            console.warn({ fileUrls });
+        });
+}
+
 export default firebase;
